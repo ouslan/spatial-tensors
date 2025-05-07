@@ -7,30 +7,26 @@ import polars as pl
 from pysal.lib import weights
 from shapely.geometry import Polygon
 from spreg import dgp_lag, Panel_FE_Lag
+import logging
 
 
 class SpatialReg:
-    def __init__(self, seed=None) -> None:
-        pass
-
-    def spatial_data(self, n, rho, t):
-        l = np.arange(n)
-        xs, ys = np.meshgrid(l, l)
-        polys = []
-        # Generate polygons
-        for x, y in zip(xs.flatten(), ys.flatten()):
-            poly = Polygon([(x, y), (x + 1, y), (x + 1, y + 1), (x, y + 1)])
-            polys.append(poly)
-        # Convert to GeoSeries
-        polys = gpd.GeoSeries(polys)
-        gdf = gpd.GeoDataFrame(
-            {
-                "geometry": polys,
-                "id": ["P-%s" % str(i).zfill(2) for i in range(len(polys))],
-            }
+    def __init__(
+        self,
+        n,
+        log_file: str = "data_process.log",
+    ):
+        self.shape = self.spatial_shape(n)
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            datefmt="%d-%b-%y %H:%M:%S",
+            filename=log_file,
         )
 
+    def spatial_data(self, n, rho, t):
         # Number of observations
+        gdf = self.shape
         n_obs = len(gdf)
 
         # Construct X matrix (with a constant term)
@@ -76,9 +72,10 @@ class SpatialReg:
                 pl.Series("bayes_w", [], dtype=pl.Float64),
                 pl.Series("freq_x", [], dtype=pl.Float64),
                 pl.Series("freq_w", [], dtype=pl.Float64),
+                pl.Series("simulations_id", [], dtype=pl.Int32),
             ]
         )
-        for _ in range(0, simulations):
+        for i in range(0, simulations):
             gdf = self.spatial_panel(n=n, time=time, rho=rho)
             wr = weights.contiguity.Rook.from_dataframe(gdf[gdf["time"] == 0])
             wr.transform = "r"
@@ -101,9 +98,11 @@ class SpatialReg:
                     pl.Series("bayes_w", [means.iloc[3]], dtype=pl.Float64),
                     pl.Series("freq_x", [fe_lag.betas[0][0]], dtype=pl.Float64),
                     pl.Series("freq_w", [fe_lag.betas[1][0]], dtype=pl.Float64),
+                    pl.Series("simulations_id", [i], dtype=pl.Int32),
                 ]
             )
             df = pl.concat([df, df_sim], how="vertical")
+            logging.info(f"Completed Simulation #{i} succesfully")
 
         self.results = {
             "bayes_x": (
@@ -120,3 +119,21 @@ class SpatialReg:
             ).item(),
         }
         return df
+
+    def spatial_shape(self, n):
+        l = np.arange(n)
+        xs, ys = np.meshgrid(l, l)
+        polys = []
+        # Generate polygons
+        for x, y in zip(xs.flatten(), ys.flatten()):
+            poly = Polygon([(x, y), (x + 1, y), (x + 1, y + 1), (x, y + 1)])
+            polys.append(poly)
+        # Convert to GeoSeries
+        polys = gpd.GeoSeries(polys)
+        gdf = gpd.GeoDataFrame(
+            {
+                "geometry": polys,
+                "id": ["P-%s" % str(i).zfill(2) for i in range(len(polys))],
+            }
+        )
+        return gdf
