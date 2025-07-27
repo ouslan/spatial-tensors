@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "aesara>=2.9.3",
     "altair[all]>=5.5.0",
     "arviz[all]>=0.21.0",
     "bambi>=0.15.0",
@@ -14,6 +15,7 @@ dependencies = [
     "numpy>=2.2.5",
     "pandas>=2.2.3",
     "polars>=1.29.0",
+    "pygam>=0.10.1",
     "pysal>=25.1",
     "spreg>=1.8.2",
 ]
