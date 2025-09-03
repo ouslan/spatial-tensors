@@ -1,0 +1,140 @@
+\documentclass{article}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsmath}
+% Add any packages as you need
+
+
+
+\begin{document}
+
+% Cover Page
+\begin{titlepage}
+	\centering
+	\vspace*{1cm}
+
+	\includegraphics[width=0.5\textwidth]{assets/logo.png}\par\vspace{1cm} % Adjust the width as needed
+
+	\Huge
+	\textbf{Proposal Title}
+
+	\vspace{0.5cm}
+	\LARGE
+	Master in Statistics Mathematics
+
+	\vspace{1.5cm}
+
+
+	\textbf{Alejandro M. Ouslan}
+
+	\vfill
+
+	\Large
+	Supervisors: \\
+	Dr. Raul E. Macchiavelli \\
+	Dra. Damaris Santana \\
+	Dr. Julio C. Hernandez \\
+	Dr. Roberto Rivera Santiago
+
+	\vspace{0.8cm}
+
+	\Large
+	University of Puerto Rico, Mayaguez \\
+	{\small \today}
+
+\end{titlepage}
+
+
+\newpage
+
+\section{Abstract}
+A brief summary of the research, including objectives, methods, and expected outcomes (more than 150 words).
+
+\section{Proposal Keywords}
+% List your keywords separated by a comma
+Spatial simulation, Spatial Regressions, GAMs, Tensor Products
+
+\section{Introduction}
+
+
+
+\section{Background and Motivation}
+\begin{itemize}
+	\item Provide background information and context of the research problem.
+	\item What is the research scope?
+	\item What is the question or problem you are trying to answer or solve?
+	\item Why is this important?
+	\item How is it done today, and what are the current limitations and challenges?
+\end{itemize}
+
+\section{Systematic Literature Review}
+\begin{itemize}
+	\item What is the state of the art in this area of research?
+	\item Provide proper references.
+	\item It is recommended that PRISMA guidelines be followed (\url{https://www.prisma-statement.org/}).
+\end{itemize}
+
+\section{Aims and Objectives}
+\begin{itemize}
+	\item What are you trying to accomplish?
+	\item How are you going to do the work?
+	\item What is new in your approach? How is your approach going to be different from others?
+	\item Why do you think it will be successful?
+	\item Describe the novelty in your approach or how are you going to improve on current approaches.
+\end{itemize}
+
+\section{Research Plan and Methodology}
+\begin{itemize}
+	\item Detailed plans and strategy of how you are going to accomplish the stated goals and objectives.
+	\item Describe the scope of the project.
+	\item Gantt chart for the timeline of the project.
+\end{itemize}
+
+The classic Spatial regressions are an extension of the normal regresion with with the addition of a spatialy term.
+\begin{equation}
+	y = \alpha + X \beta + \rho W X + \epsilon
+	\label{eq:SDM}
+\end{equation}
+
+This spatial can be addapted spatialy control for either your dependent term
+\begin{equation}
+	y = \alpha + X \beta + \rho W Y + \epsilon
+	\label{eq:SAR}
+\end{equation}
+
+Or even the error term
+
+\begin{equation}
+	\begin{split}
+		y & =\alpha + X \beta + u  \\
+		u & =\gamma W u + \epsilon
+	\end{split}
+	\label{eq:SEM}
+\end{equation}
+
+\section{Prototype Design and Implementation}
+Design a preliminary prototype to solve parts of the proposed problem (e.g., simple code using Python).
+
+\section{Success and Impact}
+\begin{itemize}
+	\item How will you know that you successfully achieved your project goals? What is the expected output of the project?
+	\item Explain what the resulting success of the project would be and what impact could be achieved if the funding is awarded.
+	\item In alignment with Vision 2030.
+	      \begin{itemize}
+		      \item Who can benefit from the project's output? How are you going to reach them?
+		      \item Provide a draft ‘plan for the dissemination and exploitation of the project's results’.
+	      \end{itemize}
+\end{itemize}
+
+
+%Add all relevant references as a bibliography.
+
+\bibliographystyle{plain}
+\bibliography{reference}
+
+
+\end{document}
+
