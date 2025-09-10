@@ -95,15 +95,21 @@ Spatial simulation, Spatial Regressions, GAMs, Tensor Products
 
 Starting for a simple regression of ordinary least squares (OLS) can be defined as follows:
 \begin{equation}
-  y = \alpha + \sum^p_{i=1} x_i \beta_i + \epsilon
+  y_i = \alpha + \sum^p_{i=1} x_i \beta_i + \epsilon
   \label{eq:OLS}
 \end{equation}
 where $y$ is our expicatory variable and $x$ is the independent variables. If we wanted to study the corrolation that a location $i$ has on its neighbors, the classic approach would be 
 to define a relationship matrix $W$ which details how each location relates to all other locations. This classic Spatial regressions are an extension of the normal regresion with with 
 the addition of a spatialy term, which can be defined as follows:
 \begin{equation}
-	y = \alpha + X \beta + \rho W X + \epsilon
+	y = X \beta + \rho W X + \epsilon
 	\label{eq:SDM}
+\end{equation}
+
+expanding the matrixes we get the following:
+\begin{equation}
+  y_{it} = \alpha + \sum^p_{i=1} x_{it} \beta_i + \rho \sum^N_{j=1} w_{ij} x_{jt} +\epsilon
+  \label{eq:SDM_exp}
 \end{equation}
 
 This spatial can be addapted spatialy control for either your dependent term
@@ -121,6 +127,8 @@ Or even the error term
 	\end{split}
 	\label{eq:SEM}
 \end{equation}
+
+s
 
 \section{Prototype Design and Implementation}
 Design a preliminary prototype to solve parts of the proposed problem (e.g., simple code using Python).
