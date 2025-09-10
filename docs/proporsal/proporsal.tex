@@ -93,7 +93,14 @@ Spatial simulation, Spatial Regressions, GAMs, Tensor Products
 	\item Gantt chart for the timeline of the project.
 \end{itemize}
 
-The classic Spatial regressions are an extension of the normal regresion with with the addition of a spatialy term.
+Starting for a simple regression of ordinary least squares (OLS) can be defined as follows:
+\begin{equation}
+  y = \alpha + \sum^p_{i=1} x_i \beta_i + \epsilon
+  \label{eq:OLS}
+\end{equation}
+where $y$ is our expicatory variable and $x$ is the independent variables. If we wanted to study the corrolation that a location $i$ has on its neighbors, the classic approach would be 
+to define a relationship matrix $W$ which details how each location relates to all other locations. This classic Spatial regressions are an extension of the normal regresion with with 
+the addition of a spatialy term, which can be defined as follows:
 \begin{equation}
 	y = \alpha + X \beta + \rho W X + \epsilon
 	\label{eq:SDM}

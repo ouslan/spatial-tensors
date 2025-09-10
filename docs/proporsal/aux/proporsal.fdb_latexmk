@@ -1,5 +1,5 @@
 # Fdb version 4
-["bibtex aux/proporsal"] 0 "aux/proporsal.aux" "aux/proporsal.bbl" "aux/proporsal" 1756905379.8648 0
+["bibtex aux/proporsal"] 0 "aux/proporsal.aux" "aux/proporsal.bbl" "aux/proporsal" 1757517430.56751 0
   "/usr/share/texmf-dist/bibtex/bst/base/plain.bst" 1755987285 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   "aux/proporsal.aux" 0 -1 0 "pdflatex"
   "reference.bib" 0 -1 0 ""
@@ -7,7 +7,7 @@
   "aux/proporsal.bbl"
   "aux/proporsal.blg"
   (rewritten before read)
-["pdflatex"] 1756905379.45783 "proporsal.tex" "out/proporsal.pdf" "proporsal" 1756905379.86494 0
+["pdflatex"] 1757517430.10989 "proporsal.tex" "out/proporsal.pdf" "proporsal" 1757517430.56766 0
   "/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1755987285 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/share/texmf-dist/fonts/tfm/jknappen/ec/tcrm1000.tfm" 1755987285 1536 e07581a4bb3136ece9eeb4c3ffab8233 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1755987285 1004 54797486969f23fa377b128694d548df ""
@@ -19,10 +19,13 @@
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm" 1755987285 768 1321e9409b4137d6fb428ac9dc956269 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb" 1755987285 34811 78b52f49e893bcba91bd7581cdc144c0 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1755987285 32080 340ef9bf63678554ee606688e7b5339d ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb" 1755987285 30251 6afa5cb1d0204815a708a080681d4674 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1755987285 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb" 1755987285 36281 c355509802a035cadc5f15869451dcee ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1755987285 35752 024fb6c41858982481f6968b5fc26508 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1755987285 32722 d7379af29a190c3f453aba36302ff5a9 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb" 1755987285 32362 179c33bbf43f19adbb3825bb4e36e57a ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb" 1755987285 32762 224316ccc9ad3ca0423a14971cfa7fc1 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb" 1755987285 33993 9b89b85fd2d9df0482bd47194d1d3bf3 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb" 1755987285 31099 c85edf1dd5b9e826d67c9c7293b6786c ""
   "/usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb" 1755987285 138258 6525c253f16cededa14c7fd0da7f67b2 ""
@@ -78,11 +81,11 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1755987285 42087 b0f9697c952c8f5a8eede4134282cb0d ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1756755261 5306876 69c328245ae101f6bc10b01e1f2bf9d5 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1756755259 2008236 beb1c13830b0ed491e6966aee324c76c ""
-  "assets/logo.png" 1754417138.9005 114926 83fc8dc3076caebdf28822984c6c3793 ""
-  "aux/proporsal.aux" 1756905379.77864 1476 9712c88a96409983a6d720bda91de3bf "pdflatex"
+  "assets/logo.png" 1757508662.30048 114926 83fc8dc3076caebdf28822984c6c3793 ""
+  "aux/proporsal.aux" 1757517430.48127 1547 86f96fd180fed9f2ab64ce5dee177195 "pdflatex"
   "aux/proporsal.bbl" 0 -1 0 "bibtex aux/proporsal"
-  "aux/proporsal.out" 1756905379.77891 1387 71dd7a8a0e4909d8bf9af994faf9d36e "pdflatex"
-  "proporsal.tex" 1754421508.38328 3754 744d65dfd16951718632d612c43582b6 ""
+  "aux/proporsal.out" 1757517430.48265 1387 71dd7a8a0e4909d8bf9af994faf9d36e "pdflatex"
+  "proporsal.tex" 1757517427.43024 4267 564078789bc4492658790bfc66a241d0 ""
   (generated)
   "aux/proporsal.aux"
   "aux/proporsal.log"
