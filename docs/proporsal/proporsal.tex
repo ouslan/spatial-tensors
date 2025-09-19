@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
 \usepackage{amsmath}
+\usepackage{float}
 % Add any packages as you need
 
 
@@ -61,33 +62,95 @@ Spatial simulation, Spatial Regressions, GAMs, Tensor Products
 
 \section{Introduction}
 
-
+Regressions are use to simplfy and model complex relationship of the real world. Every model is wrong and we add
+additional compones with the objective of better representing the real world relationship. The Spatial models
+shown in this paper are no different and are not a nobel consept. Through the use of simulations we are trying
+to understand the limitations of this model and understand what are their limitations and show on what context
+one should pick thouse models. Later next we would use some Bayesian inferecne to address one of the underlining
+problems using one of the models. Finaly we will implement the model using data from the QCEW as an applied example of the
+methods.
 
 
 \section{Background and Motivation}
-\begin{itemize}
-	\item Provide background information and context of the research problem.
-	\item What is the research scope?
-	\item What is the question or problem you are trying to answer or solve?
-	\item Why is this important?
-	\item How is it done today, and what are the current limitations and challenges?
-\end{itemize}
+
+The spatial regersion are a very simple model with very express. The SDM can be express in the following model:
+
 
 \section{Systematic Literature Review}
-\begin{itemize}
-	\item What is the state of the art in this area of research?
-	\item Provide proper references.
-	\item It is recommended that PRISMA guidelines be followed (\url{https://www.prisma-statement.org/}).
-\end{itemize}
 
 \section{Aims and Objectives}
-\begin{itemize}
-	\item What are you trying to accomplish?
-	\item How are you going to do the work?
-	\item What is new in your approach? How is your approach going to be different from others?
-	\item Why do you think it will be successful?
-	\item Describe the novelty in your approach or how are you going to improve on current approaches.
-\end{itemize}
+
+The overall objectives of this research are to understand and compare the SDM model and Semi parametric
+model using tensor products. We intend to look at on which surcumstances does each model preform better than the
+other and generate better predictors closer to the truth. Additionaly we look to the cost benefits of each model
+like the dificulty of immplementing teh model, asumptions, computational cost and other other observations.
+\begin{equation}
+	y = X \beta + \rho W X + \epsilon
+\end{equation}
+
+Where we have our classic liner componet of $X\beta$ plus our spatial componet $\rho W X$. This is the data generating
+process,the $W$ is a matrix that the researcher knows and chooses. However in practice the researcher does not know how
+this process is conducted and needs to infer what type of realationships does $W$ represent. For example this $W$ can be represened
+in the following ways:
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{assets/rook.png}
+	\caption{Rook Model}
+\end{figure}
+
+
+Represented mathematicaly this would be the following matrix
+
+\[
+	\begin{bmatrix}
+		0 & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+		1 & 0 & 1 & 0 & 1 & 0 & 0 & 0 & 0 \\
+		0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
+		1 & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 0 \\
+		0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 \\
+		0 & 0 & 1 & 0 & 1 & 0 & 0 & 0 & 1 \\
+		0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 \\
+		0 & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 1 \\
+		0 & 0 & 0 & 0 & 0 & 1 & 0 & 1 & 0 \\
+	\end{bmatrix}
+\]
+
+Another popular model is the Queens model which model all neighbors that are touching bordars
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{assets/queens.png}
+	\caption{Queens Model}
+\end{figure}
+
+Which has the following matrix attach to ti:
+\[
+	\begin{bmatrix}
+		0 & 1 & 0 & 1 & 1 & 0 & 0 & 0 & 0 \\
+		1 & 0 & 1 & 1 & 1 & 1 & 0 & 0 & 0 \\
+		0 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 0 \\
+		1 & 1 & 0 & 0 & 1 & 0 & 1 & 1 & 0 \\
+		1 & 1 & 1 & 1 & 0 & 1 & 1 & 1 & 1 \\
+		0 & 1 & 1 & 0 & 1 & 0 & 0 & 1 & 1 \\
+		0 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 0 \\
+		0 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 1 \\
+		0 & 0 & 0 & 0 & 1 & 1 & 0 & 1 & 0 \\
+	\end{bmatrix}
+\]
+
+
+There are also much more compress modell like the KNN model which followis the proces decreasing weights
+as you become further way by K units away. You can see it in the folowing graph.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.64\textwidth]{assets/kmodel.png}
+	\caption{KNN Model}
+\end{figure}
+
+It is clear to see that there numeruse ways to represent this $W$ matrix and no clear methode to deside which is apropiete
+given that in practice $W$ is actualy an unknow given that when do not know the data generating proces.
 
 \section{Research Plan and Methodology}
 
