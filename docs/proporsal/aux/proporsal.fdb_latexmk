@@ -1,5 +1,5 @@
 # Fdb version 4
-["bibtex aux/proporsal"] 0 "aux/proporsal.aux" "aux/proporsal.bbl" "aux/proporsal" 1758287908.59824 0
+["bibtex aux/proporsal"] 0 "aux/proporsal.aux" "aux/proporsal.bbl" "aux/proporsal" 1758288499.72991 0
   "/usr/share/texmf-dist/bibtex/bst/base/plain.bst" 1755987285 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   "aux/proporsal.aux" 0 -1 0 "pdflatex"
   "reference.bib" 0 -1 0 ""
@@ -7,7 +7,7 @@
   "aux/proporsal.bbl"
   "aux/proporsal.blg"
   (rewritten before read)
-["pdflatex"] 1758287907.47405 "proporsal.tex" "out/proporsal.pdf" "proporsal" 1758287908.59845 0
+["pdflatex"] 1758288498.33885 "proporsal.tex" "out/proporsal.pdf" "proporsal" 1758288499.7302 0
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1755987285 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1755987285 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmbx9.tfm" 1755987285 1328 5442e22a7072966dbaf88ca900acf3f0 ""
@@ -81,10 +81,10 @@
   "assets/logo.png" 1757614796.60383 114926 83fc8dc3076caebdf28822984c6c3793 ""
   "assets/queens.png" 1758287410.45009 54958 602cf171c1a51cf6c55ecb04f7673896 ""
   "assets/rook.png" 1758286822.18787 31030 8fb9706e154d8da92ec578a4fe53876d ""
-  "aux/proporsal.aux" 1758287908.45987 2080 5ef3feb6d9523523db8334fbc5523ef4 "pdflatex"
+  "aux/proporsal.aux" 1758288499.53224 2127 0ca6cb4a7f0dc946da240c136ed7c01c "pdflatex"
   "aux/proporsal.bbl" 0 -1 0 "bibtex aux/proporsal"
-  "aux/proporsal.out" 1758287908.46155 1304 595641d0e9b6f85b5ec85b217803a60c "pdflatex"
-  "proporsal.tex" 1758287906.67026 8023 b46afde5d4e7a06d5a2cf7733698b4fd ""
+  "aux/proporsal.out" 1758288499.53416 1304 595641d0e9b6f85b5ec85b217803a60c "pdflatex"
+  "proporsal.tex" 1758288497.69202 7384 f9f2aed21d2d5780643c24a83b0234c3 ""
   (generated)
   "aux/proporsal.aux"
   "aux/proporsal.log"

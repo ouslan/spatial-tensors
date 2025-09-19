@@ -6,9 +6,6 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{amsmath}
 \usepackage{float}
-% Add any packages as you need
-
-
 
 \begin{document}
 
@@ -20,14 +17,13 @@
 	\includegraphics[width=0.5\textwidth]{assets/logo.png}\par\vspace{1cm} % Adjust the width as needed
 
 	\Huge
-	\textbf{Proposal Title}
+	\textbf{Modeling Spatial Dependence: A Simulation-Based Comparison of Parametric and Semi-Parametric Approaches}
 
 	\vspace{0.5cm}
 	\LARGE
 	Master in Statistics Mathematics
 
 	\vspace{1.5cm}
-
 
 	\textbf{Alejandro M. Ouslan}
 
@@ -43,64 +39,43 @@
 	\vspace{0.8cm}
 
 	\Large
-	University of Puerto Rico, Mayaguez \\
+	University of Puerto Rico, Mayagüez \\
 	{\small \today}
 
 \end{titlepage}
 
-
 \newpage
 
-
 \begin{abstract}
-	This research looks to compare the preformance of Spatial regressions using a predefined
-	weights matrix and semi parametric regessions with a spatila smoother
+	This research aims to compare the performance of spatial regression models that rely on predefined weight matrices with that of semi-parametric regression models using spatial smoothers.
 \end{abstract}
+
 \section{Proposal Keywords}
-% List your keywords separated by a comma
 Spatial simulation, Spatial Regressions, GAMs, Tensor Products
 
 \section{Introduction}
 
-Regressions are use to simplfy and model complex relationship of the real world. Every model is wrong and we add
-additional compones with the objective of better representing the real world relationship. The Spatial models
-shown in this paper are no different and are not a nobel consept. Through the use of simulations we are trying
-to understand the limitations of this model and understand what are their limitations and show on what context
-one should pick thouse models. Later next we would use some Bayesian inferecne to address one of the underlining
-problems using one of the models. Finaly we will implement the model using data from the QCEW as an applied example of the
-methods.
+Regression models are commonly used to simplify and represent complex real-world relationships. Since all models are approximations, additional components are often introduced to better capture underlying patterns. Spatial models are no exception and are not a novel concept. Through simulation, this research seeks to understand the limitations of various spatial models and identify contexts in which specific models are preferable.
 
+We also aim to address key issues using Bayesian inference on one of the models. As a practical application, we will implement the models using data from the Quarterly Census of Employment and Wages (QCEW).
 
 \section{Background and Motivation}
 
-The spatial regersion are a very simple model with very express. The SDM can be express in the following model:
+Spatial regression models are relatively simple yet expressive tools. The Spatial Durbin Model (SDM) can be expressed as:
 
-
-\section{Systematic Literature Review}
-
-\section{Aims and Objectives}
-
-The overall objectives of this research are to understand and compare the SDM model and Semi parametric
-model using tensor products. We intend to look at on which surcumstances does each model preform better than the
-other and generate better predictors closer to the truth. Additionaly we look to the cost benefits of each model
-like the dificulty of immplementing teh model, asumptions, computational cost and other other observations.
 \begin{equation}
 	y = X \beta + \rho W X + \epsilon
 \end{equation}
 
-Where we have our classic liner componet of $X\beta$ plus our spatial componet $\rho W X$. This is the data generating
-process,the $W$ is a matrix that the researcher knows and chooses. However in practice the researcher does not know how
-this process is conducted and needs to infer what type of realationships does $W$ represent. For example this $W$ can be represened
-in the following ways:
+In this formulation, $X \beta$ represents the standard linear component, and $\rho W X$ incorporates spatial influence through a known weight matrix $W$. However, in real-world applications, $W$ is not truly known and must be inferred or chosen by the researcher. For example, $W$ can be represented in different forms, such as:
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.4\textwidth]{assets/rook.png}
-	\caption{Rook Model}
+	\caption{Rook Contiguity Matrix}
 \end{figure}
 
-
-Represented mathematicaly this would be the following matrix
+Mathematically, the rook model can be represented as:
 
 \[
 	\begin{bmatrix}
@@ -116,15 +91,16 @@ Represented mathematicaly this would be the following matrix
 	\end{bmatrix}
 \]
 
-Another popular model is the Queens model which model all neighbors that are touching bordars
+Another popular variant is the Queen’s contiguity model, which includes all bordering neighbors:
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.4\textwidth]{assets/queens.png}
-	\caption{Queens Model}
+	\caption{Queen Contiguity Matrix}
 \end{figure}
 
-Which has the following matrix attach to ti:
+Its corresponding matrix:
+
 \[
 	\begin{bmatrix}
 		0 & 1 & 0 & 1 & 1 & 0 & 0 & 0 & 0 \\
@@ -139,101 +115,114 @@ Which has the following matrix attach to ti:
 	\end{bmatrix}
 \]
 
-
-There are also much more compress modell like the KNN model which followis the proces decreasing weights
-as you become further way by K units away. You can see it in the folowing graph.
+Another approach is the k-nearest neighbors (KNN) model, where influence decreases with distance:
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.64\textwidth]{assets/kmodel.png}
-	\caption{KNN Model}
+	\caption{K-Nearest Neighbors (KNN) Model}
 \end{figure}
 
-It is clear to see that there numeruse ways to represent this $W$ matrix and no clear methode to deside which is apropiete
-given that in practice $W$ is actualy an unknow given that when do not know the data generating proces.
+Clearly, there are numerous ways to define the $W$ matrix, and no universally accepted method exists for choosing the most appropriate one. In practice, $W$ is unknown and selecting it remains a major modeling challenge.
+
+\section{Systematic Literature Review}
+
+% [This section can be expanded with summaries of existing works and citations.]
+
+\section{Aims and Objectives}
+
+The primary objective of this research is to understand and compare the Spatial Durbin Model (SDM) and a semi-parametric model using tensor product smoothers. We will investigate under what circumstances each model performs better in terms of prediction accuracy and reliability. Furthermore, we aim to evaluate trade-offs such as ease of implementation, assumptions, computational cost, and interpretability.
+
+We restate the SDM as:
+
+\begin{equation}
+	y = X \beta + \rho W X + \epsilon
+\end{equation}
+
+Where $W$ is predefined by the researcher, though in practice the actual spatial process remains unknown. Choosing an appropriate $W$ is often left to domain experts.
 
 \section{Research Plan and Methodology}
 
-Starting for a simple regression of ordinary least squares (OLS) can be defined as follows:
+We begin with the classical Ordinary Least Squares (OLS) regression:
+
 \begin{equation}
 	y_i = \alpha + \sum^p_{i=1} x_i \beta_i + \epsilon
 	\label{eq:OLS}
 \end{equation}
-where $y$ is our expicatory variable and $x$ is the independent variables. If we wanted to study the corrolation that a location $i$ has on its neighbors, the classic approach would be
-to define a relationship matrix $W$ which details how each location relates to all other locations. This classic Spatial regressions are an extension of the normal regresion with with
-the addition of a spatialy term, which can be defined as follows:
+
+To account for spatial correlation, we introduce a spatial weight matrix $W$ into the regression:
+
 \begin{equation}
 	y = X \beta + \rho W X + \epsilon
 	\label{eq:SDM}
 \end{equation}
 
-expanding the matrixes we get the following:
+Which expands to:
+
 \begin{equation}
-	y_{it} = \alpha + \sum^p_{i=1} x_{it} \beta_i + \rho \sum^N_{j=1} w_{ij} x_{jt} +\epsilon
+	y_{it} = \alpha + \sum^p_{i=1} x_{it} \beta_i + \rho \sum^N_{j=1} w_{ij} x_{jt} + \epsilon
 	\label{eq:SDM_exp}
 \end{equation}
 
-This spatial can be addapted spatialy control for either your dependent term
+Alternatively, spatial terms may be incorporated into the dependent variable:
+
 \begin{equation}
 	y = \alpha + X \beta + \rho W Y + \epsilon
 	\label{eq:SAR}
 \end{equation}
 
-Or even the error term
+Or into the error structure:
 
 \begin{equation}
 	\begin{split}
-		y & =\alpha + X \beta + u  \\
-		u & =\gamma W u + \epsilon
+		y & = \alpha + X \beta + u  \\
+		u & = \gamma W u + \epsilon
 	\end{split}
 	\label{eq:SEM}
 \end{equation}
 
-Continuing from the SDM we can express the model a non linear equation as follows:
+The semi-parametric model with a spatial smoother can be expressed as:
+
 \begin{equation}
 	y = \alpha + \sum^p_{i=1} x_{it} \beta_i + f(C_i) + \epsilon
 	\label{eq:tensor}
 \end{equation}
-where $C$ is the centroid of the observations and $f(C)$ is a function given the centroid of the individuals.
 
+Where $C_i$ is the centroid of each observation and $f(C_i)$ is a spatial smoothing function.
 
-
-The overall hypothesis is whether the semiparametric methode preforms better
-on average given that we do not have reason to believe what is $W$. We expect to find what are to mesure the effects of picking a wrong $W$
-and wheather we can miticate them with using a spetial smoother.
+We hypothesize that semi-parametric models may outperform spatial regression models, especially when the true $W$ matrix is unknown or misspecified.
 
 \section{Prototype Design and Implementation}
 
-The Strategy for this resarch is to simulate data in the folowing format:
+We will simulate data using the following structure:
+
 \begin{equation}
 	y \sim \alpha + \sum^p_{i=1} x_{it} \beta_i + \rho \sum^N_{j=1} w_{ij} x_{jt} + \epsilon
 \end{equation}
 
-Where $\epsilon \sim N(0,\sigma^2$ and $W$ is defined in multiple ways this could be show in the following examples:
+With $\epsilon \sim N(0,\sigma^2)$ and multiple forms of $W$ (rook, queen, KNN, etc.) used for robustness testing.
 
 \section{Success and Impact}
 
-The SDM generaly carries the problem that is very influenced on how $W$ is defined and there is now systematic
-methedology to pick an apropiet $W$. This task is mostly delegated to domain experties. Given that the semiparametric
-model proposed does not depend on $W$ this research intends to look if this model has a better preformance than the SDM model.
-Preformance of this model is primarly defined as:
+SDM models are highly sensitive to the choice of $W$, for which no standardized selection method exists. Often, domain expertise is required. The semi-parametric model, however, does not depend on $W$, making it potentially more robust.
+
+We will evaluate model performance using mean squared error (MSE) of predicted outcomes:
+
 \begin{equation}
-	\frac{\sum_{n=1}^N(y_n-\hat{y}_{nSDM})^2}{N}; \quad \frac{(y-\hat{y}_{GAM})^2}{N}
+	\frac{\sum_{n=1}^N(y_n-\hat{y}_{nSDM})^2}{N}; \quad \frac{\sum_{n=1}^N(y-\hat{y}_{GAM})^2}{N}
 	\label{eq:pref}
 \end{equation}
-where $N$ is the number of simulations, $y$ is the predetermine outcome variable that we picked before the simulations are run.
-In addition we would also use look at the performance of $\beta$ which can be shown in the simal maner:
+
+And by comparing estimated vs. true coefficients:
+
 \begin{equation}
-	\frac{(\beta-\hat{\beta}_{SDM})^2}{N}; \quad \frac{(\beta-\hat{\beta}_{GAM})^2}{N}
+	\frac{\sum_{n=1}^N(\beta-\hat{\beta}_{SDM})^2}{N}; \quad \frac{\sum_{n=1}^N(\beta-\hat{\beta}_{GAM})^2}{N}
 	\label{eq:pref2}
 \end{equation}
 
-
-%Add all relevant references as a bibliography.
+\newpage
 
 \bibliographystyle{plain}
 \bibliography{reference}
 
-
 \end{document}
-
