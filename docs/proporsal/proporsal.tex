@@ -50,14 +50,17 @@
 
 \newpage
 
-\section{Abstract}
-A brief summary of the research, including objectives, methods, and expected outcomes (more than 150 words).
 
+\begin{abstract}
+	This research looks to compare the preformance of Spatial regressions using a predefined
+	weights matrix and semi parametric regessions with a spatila smoother
+\end{abstract}
 \section{Proposal Keywords}
 % List your keywords separated by a comma
 Spatial simulation, Spatial Regressions, GAMs, Tensor Products
 
 \section{Introduction}
+
 
 
 
@@ -87,19 +90,14 @@ Spatial simulation, Spatial Regressions, GAMs, Tensor Products
 \end{itemize}
 
 \section{Research Plan and Methodology}
-\begin{itemize}
-	\item Detailed plans and strategy of how you are going to accomplish the stated goals and objectives.
-	\item Describe the scope of the project.
-	\item Gantt chart for the timeline of the project.
-\end{itemize}
 
 Starting for a simple regression of ordinary least squares (OLS) can be defined as follows:
 \begin{equation}
-  y_i = \alpha + \sum^p_{i=1} x_i \beta_i + \epsilon
-  \label{eq:OLS}
+	y_i = \alpha + \sum^p_{i=1} x_i \beta_i + \epsilon
+	\label{eq:OLS}
 \end{equation}
-where $y$ is our expicatory variable and $x$ is the independent variables. If we wanted to study the corrolation that a location $i$ has on its neighbors, the classic approach would be 
-to define a relationship matrix $W$ which details how each location relates to all other locations. This classic Spatial regressions are an extension of the normal regresion with with 
+where $y$ is our expicatory variable and $x$ is the independent variables. If we wanted to study the corrolation that a location $i$ has on its neighbors, the classic approach would be
+to define a relationship matrix $W$ which details how each location relates to all other locations. This classic Spatial regressions are an extension of the normal regresion with with
 the addition of a spatialy term, which can be defined as follows:
 \begin{equation}
 	y = X \beta + \rho W X + \epsilon
@@ -108,8 +106,8 @@ the addition of a spatialy term, which can be defined as follows:
 
 expanding the matrixes we get the following:
 \begin{equation}
-  y_{it} = \alpha + \sum^p_{i=1} x_{it} \beta_i + \rho \sum^N_{j=1} w_{ij} x_{jt} +\epsilon
-  \label{eq:SDM_exp}
+	y_{it} = \alpha + \sum^p_{i=1} x_{it} \beta_i + \rho \sum^N_{j=1} w_{ij} x_{jt} +\epsilon
+	\label{eq:SDM_exp}
 \end{equation}
 
 This spatial can be addapted spatialy control for either your dependent term
@@ -124,26 +122,48 @@ Or even the error term
 	\begin{split}
 		y & =\alpha + X \beta + u  \\
 		u & =\gamma W u + \epsilon
-	\end{split} 
+	\end{split}
 	\label{eq:SEM}
 \end{equation}
 
 Continuing from the SDM we can express the model a non linear equation as follows:
+\begin{equation}
+	y = \alpha + \sum^p_{i=1} x_{it} \beta_i + f(C_i) + \epsilon
+	\label{eq:tensor}
+\end{equation}
+where $C$ is the centroid of the observations and $f(C)$ is a function given the centroid of the individuals.
 
+
+
+The overall hypothesis is whether the semiparametric methode preforms better
+on average given that we do not have reason to believe what is $W$. We expect to find what are to mesure the effects of picking a wrong $W$
+and wheather we can miticate them with using a spetial smoother.
 
 \section{Prototype Design and Implementation}
-Design a preliminary prototype to solve parts of the proposed problem (e.g., simple code using Python).
+
+The Strategy for this resarch is to simulate data in the folowing format:
+\begin{equation}
+	y \sim \alpha + \sum^p_{i=1} x_{it} \beta_i + \rho \sum^N_{j=1} w_{ij} x_{jt} + \epsilon
+\end{equation}
+
+Where $\epsilon \sim N(0,\sigma^2$ and $W$ is defined in multiple ways this could be show in the following examples:
 
 \section{Success and Impact}
-\begin{itemize}
-	\item How will you know that you successfully achieved your project goals? What is the expected output of the project?
-	\item Explain what the resulting success of the project would be and what impact could be achieved if the funding is awarded.
-	\item In alignment with Vision 2030.
-	      \begin{itemize}
-		      \item Who can benefit from the project's output? How are you going to reach them?
-		      \item Provide a draft ‘plan for the dissemination and exploitation of the project's results’.
-	      \end{itemize}
-\end{itemize}
+
+The SDM generaly carries the problem that is very influenced on how $W$ is defined and there is now systematic
+methedology to pick an apropiet $W$. This task is mostly delegated to domain experties. Given that the semiparametric
+model proposed does not depend on $W$ this research intends to look if this model has a better preformance than the SDM model.
+Preformance of this model is primarly defined as:
+\begin{equation}
+	\frac{\sum_{n=1}^N(y_n-\hat{y}_{nSDM})^2}{N}; \quad \frac{(y-\hat{y}_{GAM})^2}{N}
+	\label{eq:pref}
+\end{equation}
+where $N$ is the number of simulations, $y$ is the predetermine outcome variable that we picked before the simulations are run.
+In addition we would also use look at the performance of $\beta$ which can be shown in the simal maner:
+\begin{equation}
+	\frac{(\beta-\hat{\beta}_{SDM})^2}{N}; \quad \frac{(\beta-\hat{\beta}_{GAM})^2}{N}
+	\label{eq:pref2}
+\end{equation}
 
 
 %Add all relevant references as a bibliography.
