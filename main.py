@@ -6,7 +6,7 @@ sr = SpatialReg()
 
 
 def main():
-    master = sr.spatial_simulation(time=10, rho=0.7, simulations=10000, start_seed=787)
+    master = sr.spatial_simulation(time=10, rho=0.7, simulations=100, start_seed=787)
     master.write_csv("results_raw.csv")
     file_path = "bayesian_results.json"
 

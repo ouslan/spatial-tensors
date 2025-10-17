@@ -1,8 +1,8 @@
 import logging
 import os
 
-import geopandas as gpd
 import pandas as pd
+import geopandas as gpd
 import polars as pl
 import requests
 from tqdm import tqdm
