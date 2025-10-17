@@ -343,7 +343,7 @@ class SpatialReg(DataPull):
                 observed=y_true,
             )
 
-            idata = pm.sample(draws=3000, chains=10, progressbar=False)
+            idata = pm.sample(chains=10, progressbar=False)
 
         return idata
 

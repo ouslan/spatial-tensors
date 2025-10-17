@@ -171,3 +171,4 @@ docs/papers/*.pdf
 docs/proporsal/*.out
 *.ddb
 *.zip
+*.json
