@@ -8,6 +8,8 @@ from pysal.lib import weights
 from shapely import wkt
 from spreg import dgp_lag
 import statsmodels.api as sm
+from sklearn.linear_model import Ridge
+from patsy import dmatrix
 import pymc as pm
 
 from .data_pull import DataPull
@@ -51,7 +53,7 @@ class SpatialReg(DataPull):
             X[:, i] = rng.normal(loc=mu, scale=sigma, size=n_obs)
 
         # Define Beta coefficients
-        beta = np.array([4, 5, 6, 7])
+        beta = np.array([4, 5, 6    , 7])
 
         # Compute XB matrix
         xb = X @ beta
@@ -68,6 +70,9 @@ class SpatialReg(DataPull):
         gdf["X_1"] = X[:, 1]
         gdf["X_2"] = X[:, 2]
         gdf["X_3"] = X[:, 3]
+        gdf["centroid"] = gdf.centroid
+        gdf["lat"] = gdf["centroid"].x
+        gdf["lon"] = gdf["centroid"].y 
         gdf["w_rook"] = weights.lag_spatial(self.wr, y_true)
         gdf["w_queen"] = weights.lag_spatial(self.wq, y_true)
         gdf["w_knn6"] = weights.lag_spatial(self.wk6, y_true)
@@ -84,6 +89,9 @@ class SpatialReg(DataPull):
                 "X_1",
                 "X_2",
                 "X_3",
+                "centroid",
+                "lat", 
+                "lon",
                 "w_rook",
                 "w_queen",
                 "w_knn6",
@@ -103,25 +111,25 @@ class SpatialReg(DataPull):
         logging.getLogger("pymc").setLevel(logging.WARNING)
         df_simulation = pl.DataFrame(
             [
-                pl.Series("bayes_rook_X1", [], dtype=pl.Float64),
-                pl.Series("bayes_rook_X2", [], dtype=pl.Float64),
-                pl.Series("bayes_rook_X3", [], dtype=pl.Float64),
-                pl.Series("bayes_rook_rho", [], dtype=pl.Float64),
-                pl.Series("bayes_rook_intercept", [], dtype=pl.Float64),
-                pl.Series("bayes_queen_X1", [], dtype=pl.Float64),
-                pl.Series("bayes_queen_X2", [], dtype=pl.Float64),
-                pl.Series("bayes_queen_X3", [], dtype=pl.Float64),
-                pl.Series("bayes_queen_rho", [], dtype=pl.Float64),
-                pl.Series("bayes_queen_intercept", [], dtype=pl.Float64),
-                pl.Series("bayes_knn6_X1", [], dtype=pl.Float64),
-                pl.Series("bayes_knn6_X2", [], dtype=pl.Float64),
-                pl.Series("bayes_knn6_X3", [], dtype=pl.Float64),
-                pl.Series("bayes_knn6_rho", [], dtype=pl.Float64),
-                pl.Series("bayes_knn6_intercept", [], dtype=pl.Float64),
-                pl.Series("bayes_base_X1", [], dtype=pl.Float64),
-                pl.Series("bayes_base_X2", [], dtype=pl.Float64),
-                pl.Series("bayes_base_X3", [], dtype=pl.Float64),
-                pl.Series("bayes_base_intercept", [], dtype=pl.Float64),
+                # pl.Series("bayes_rook_X1", [], dtype=pl.Float64),
+                # pl.Series("bayes_rook_X2", [], dtype=pl.Float64),
+                # pl.Series("bayes_rook_X3", [], dtype=pl.Float64),
+                # pl.Series("bayes_rook_rho", [], dtype=pl.Float64),
+                # pl.Series("bayes_rook_intercept", [], dtype=pl.Float64),
+                # pl.Series("bayes_queen_X1", [], dtype=pl.Float64),
+                # pl.Series("bayes_queen_X2", [], dtype=pl.Float64),
+                # pl.Series("bayes_queen_X3", [], dtype=pl.Float64),
+                # pl.Series("bayes_queen_rho", [], dtype=pl.Float64),
+                # pl.Series("bayes_queen_intercept", [], dtype=pl.Float64),
+                # pl.Series("bayes_knn6_X1", [], dtype=pl.Float64),
+                # pl.Series("bayes_knn6_X2", [], dtype=pl.Float64),
+                # pl.Series("bayes_knn6_X3", [], dtype=pl.Float64),
+                # pl.Series("bayes_knn6_rho", [], dtype=pl.Float64),
+                # pl.Series("bayes_knn6_intercept", [], dtype=pl.Float64),
+                # pl.Series("bayes_base_X1", [], dtype=pl.Float64),
+                # pl.Series("bayes_base_X2", [], dtype=pl.Float64),
+                # pl.Series("bayes_base_X3", [], dtype=pl.Float64),
+                # pl.Series("bayes_base_intercept", [], dtype=pl.Float64),
                 pl.Series("freq_rook_X1", [], dtype=pl.Float64),
                 pl.Series("freq_rook_X2", [], dtype=pl.Float64),
                 pl.Series("freq_rook_X3", [], dtype=pl.Float64),
@@ -141,6 +149,10 @@ class SpatialReg(DataPull):
                 pl.Series("freq_base_X2", [], dtype=pl.Float64),
                 pl.Series("freq_base_X3", [], dtype=pl.Float64),
                 pl.Series("freq_base_intercept", [], dtype=pl.Float64),
+                pl.Series("freq_tensor_X1", [], dtype=pl.Float64),
+                pl.Series("freq_tensor_X2", [], dtype=pl.Float64),
+                pl.Series("freq_tensor_X3", [], dtype=pl.Float64),
+                pl.Series("freq_tensor_intercept", [], dtype=pl.Float64),
                 pl.Series("simulknations_id", [], dtype=pl.Int32),
             ]
         )
@@ -150,43 +162,54 @@ class SpatialReg(DataPull):
             gdf = self.spatial_panel(time=time, rho=rho, seed=start_seed)
             df = gdf.drop("geometry", axis=1)
 
-            # Bayesian regressions
-            results_rook = self.bayes_reg(data=df, weight="w_rook")
-            az_rook = az.summary(results_rook, hdi_prob=0.95)
-            bayes_rook = az_rook["mean"]
+            # # Bayesian regressions
+            # results_rook = self.bayes_reg(data=df, weight="w_rook")
+            # az_rook = az.summary(results_rook, hdi_prob=0.95)
+            # bayes_rook = az_rook["mean"]
 
-            results_queen = self.bayes_reg(data=df, weight="w_queen")
-            az_queen = az.summary(results_queen, hdi_prob=0.95)
-            bayes_queen = az_queen["mean"]
+            # results_queen = self.bayes_reg(data=df, weight="w_queen")
+            # az_queen = az.summary(results_queen, hdi_prob=0.95)
+            # bayes_queen = az_queen["mean"]
 
-            results_knn6 = self.bayes_reg(data=df, weight="w_knn6")
-            az_knn6 = az.summary(results_knn6, hdi_prob=0.95)
-            bayes_knn6 = az_knn6["mean"]
+            # results_knn6 = self.bayes_reg(data=df, weight="w_knn6")
+            # az_knn6 = az.summary(results_knn6, hdi_prob=0.95)
+            # bayes_knn6 = az_knn6["mean"]
 
-            # Bayesian base (no spatial weight)
-            y_true = df["y_true"].values
-            X_1 = df["X_1"].values
-            X_2 = df["X_2"].values
-            X_3 = df["X_3"].values
+            # # Bayesian base (no spatial weight)
+            # y_true = df["y_true"].values
+            # X_1 = df["X_1"].values
+            # X_2 = df["X_2"].values
+            # X_3 = df["X_3"].values
 
-            with pm.Model() as model:
-                sigma = pm.HalfCauchy("sigma", beta=10)
-                intercept = pm.Normal("intercept", 0, sigma=20)
-                beta_1 = pm.Normal("X_1", 0, sigma=10)
-                beta_2 = pm.Normal("X_2", 0, sigma=10)
-                beta_3 = pm.Normal("X_3", 0, sigma=10)
+            # with pm.Model() as model:
+            #     sigma = pm.HalfCauchy("sigma", beta=10)
+            #     intercept = pm.Normal("intercept", 0, sigma=20)
+            #     beta_1 = pm.Normal("X_1", 0, sigma=10)
+            #     beta_2 = pm.Normal("X_2", 0, sigma=10)
+            #     beta_3 = pm.Normal("X_3", 0, sigma=10)
 
-                pm.Normal(
-                    "y_true",
-                    mu=intercept + beta_1 * X_1 + beta_2 * X_2 + beta_3 * X_3,
-                    sigma=sigma,
-                    observed=y_true,
-                )
+            #     pm.Normal(
+            #         "y_true",
+            #         mu=intercept + beta_1 * X_1 + beta_2 * X_2 + beta_3 * X_3,
+            #         sigma=sigma,
+            #         observed=y_true,
+            #     )
 
-                idata = pm.sample(chains=10, progressbar=False)
+            #     idata = pm.sample(chains=10, progressbar=False)
 
-            az_base = az.summary(idata, hdi_prob=0.95)
-            bayes_base = az_base["mean"]
+            # az_base = az.summary(idata, hdi_prob=0.95)
+            # bayes_base = az_base["mean"]
+
+            # Tensor regression smoothing
+            formula = "X_1 + X_2 + X_3 + te(cr(lat, df=6), cr(lon, df=6), constraints='center')"
+            design = dmatrix(formula, gdf)
+
+            model = Ridge(alpha=1e-3)
+            model.fit(design, gdf["y_true"])
+            column_names = design.design_info.column_names
+
+            coef = model.coef_
+            coef_dict = dict(zip(column_names, coef))
 
             # Frequentist regressions
             results_rook = self.freq_reg(data=df, weights="w_rook")
@@ -196,25 +219,25 @@ class SpatialReg(DataPull):
 
             df_sim = pl.DataFrame(
                 [
-                    pl.Series("bayes_rook_X1", [bayes_rook["X_1"]]),
-                    pl.Series("bayes_rook_X2", [bayes_rook["X_2"]]),
-                    pl.Series("bayes_rook_X3", [bayes_rook["X_3"]]),
-                    pl.Series("bayes_rook_rho", [bayes_rook["rho"]]),
-                    pl.Series("bayes_rook_intercept", [bayes_rook["intercept"]]),
-                    pl.Series("bayes_queen_X1", [bayes_queen["X_1"]]),
-                    pl.Series("bayes_queen_X2", [bayes_queen["X_2"]]),
-                    pl.Series("bayes_queen_X3", [bayes_queen["X_3"]]),
-                    pl.Series("bayes_queen_rho", [bayes_queen["rho"]]),
-                    pl.Series("bayes_queen_intercept", [bayes_queen["intercept"]]),
-                    pl.Series("bayes_knn6_X1", [bayes_knn6["X_1"]]),
-                    pl.Series("bayes_knn6_X2", [bayes_knn6["X_2"]]),
-                    pl.Series("bayes_knn6_X3", [bayes_knn6["X_3"]]),
-                    pl.Series("bayes_knn6_rho", [bayes_knn6["rho"]]),
-                    pl.Series("bayes_knn6_intercept", [bayes_knn6["intercept"]]),
-                    pl.Series("bayes_base_X1", [bayes_base["X_1"]]),
-                    pl.Series("bayes_base_X2", [bayes_base["X_2"]]),
-                    pl.Series("bayes_base_X3", [bayes_base["X_3"]]),
-                    pl.Series("bayes_base_intercept", [bayes_base["intercept"]]),
+                    # pl.Series("bayes_rook_X1", [bayes_rook["X_1"]]),
+                    # pl.Series("bayes_rook_X2", [bayes_rook["X_2"]]),
+                    # pl.Series("bayes_rook_X3", [bayes_rook["X_3"]]),
+                    # pl.Series("bayes_rook_rho", [bayes_rook["rho"]]),
+                    # pl.Series("bayes_rook_intercept", [bayes_rook["intercept"]]),
+                    # pl.Series("bayes_queen_X1", [bayes_queen["X_1"]]),
+                    # pl.Series("bayes_queen_X2", [bayes_queen["X_2"]]),
+                    # pl.Series("bayes_queen_X3", [bayes_queen["X_3"]]),
+                    # pl.Series("bayes_queen_rho", [bayes_queen["rho"]]),
+                    # pl.Series("bayes_queen_intercept", [bayes_queen["intercept"]]),
+                    # pl.Series("bayes_knn6_X1", [bayes_knn6["X_1"]]),
+                    # pl.Series("bayes_knn6_X2", [bayes_knn6["X_2"]]),
+                    # pl.Series("bayes_knn6_X3", [bayes_knn6["X_3"]]),
+                    # pl.Series("bayes_knn6_rho", [bayes_knn6["rho"]]),
+                    # pl.Series("bayes_knn6_intercept", [bayes_knn6["intercept"]]),
+                    # pl.Series("bayes_base_X1", [bayes_base["X_1"]]),
+                    # pl.Series("bayes_base_X2", [bayes_base["X_2"]]),
+                    # pl.Series("bayes_base_X3", [bayes_base["X_3"]]),
+                    # pl.Series("bayes_base_intercept", [bayes_base["intercept"]]),
                     pl.Series("freq_rook_X1", [results_rook.params[1]]),
                     pl.Series("freq_rook_X2", [results_rook.params[2]]),
                     pl.Series("freq_rook_X3", [results_rook.params[3]]),
@@ -234,6 +257,10 @@ class SpatialReg(DataPull):
                     pl.Series("freq_base_X2", [results_base.params[2]]),
                     pl.Series("freq_base_X3", [results_base.params[3]]),
                     pl.Series("freq_base_intercept", [results_base.params[0]]),
+                    pl.Series("freq_tensor_X1", [coef_dict["X_1"]]),
+                    pl.Series("freq_tensor_X2", [coef_dict["X_2"]]),
+                    pl.Series("freq_tensor_X3", [coef_dict["X_3"]]),
+                    pl.Series("freq_tensor_intercept", [model.intercept_]),
                     pl.Series("simulknations_id", [i], dtype=pl.Int32),
                 ]
             )
@@ -242,94 +269,94 @@ class SpatialReg(DataPull):
             logging.info(f"Completed Simulation #{i} successfully")
 
             self.results = {
-                # Bayes Rook
-                "bayes_rook_intercept": (
-                    df_simulation.select(
-                        (pl.col("bayes_rook_intercept") - 4) ** 2
-                    ).sum()
-                    / simulations
-                ).item(),
-                "bayes_rook_X1": (
-                    df_simulation.select((pl.col("bayes_rook_X1") - 5) ** 2).sum()
-                    / simulations
-                ).item(),
-                "bayes_rook_X2": (
-                    df_simulation.select((pl.col("bayes_rook_X2") - 6) ** 2).sum()
-                    / simulations
-                ).item(),
-                "bayes_rook_X3": (
-                    df_simulation.select((pl.col("bayes_rook_X3") - 7) ** 2).sum()
-                    / simulations
-                ).item(),
-                "bayes_rook_rho": (
-                    df_simulation.select((pl.col("bayes_rook_rho") - rho) ** 2).sum()
-                    / simulations
-                ).item(),
-                # Bayes Queen
-                "bayes_queen_intercept": (
-                    df_simulation.select(
-                        (pl.col("bayes_queen_intercept") - 4) ** 2
-                    ).sum()
-                    / simulations
-                ).item(),
-                "bayes_queen_X1": (
-                    df_simulation.select((pl.col("bayes_queen_X1") - 5) ** 2).sum()
-                    / simulations
-                ).item(),
-                "bayes_queen_X2": (
-                    df_simulation.select((pl.col("bayes_queen_X2") - 6) ** 2).sum()
-                    / simulations
-                ).item(),
-                "bayes_queen_X3": (
-                    df_simulation.select((pl.col("bayes_queen_X3") - 7) ** 2).sum()
-                    / simulations
-                ).item(),
-                "bayes_queen_rho": (
-                    df_simulation.select((pl.col("bayes_queen_rho") - rho) ** 2).sum()
-                    / simulations
-                ).item(),
-                # Bayes KNN6
-                "bayes_knn6_intercept": (
-                    df_simulation.select(
-                        (pl.col("bayes_knn6_intercept") - 4) ** 2
-                    ).sum()
-                    / simulations
-                ).item(),
-                "bayes_knn6_X1": (
-                    df_simulation.select((pl.col("bayes_knn6_X1") - 5) ** 2).sum()
-                    / simulations
-                ).item(),
-                "bayes_knn6_X2": (
-                    df_simulation.select((pl.col("bayes_knn6_X2") - 6) ** 2).sum()
-                    / simulations
-                ).item(),
-                "bayes_knn6_X3": (
-                    df_simulation.select((pl.col("bayes_knn6_X3") - 7) ** 2).sum()
-                    / simulations
-                ).item(),
-                "bayes_knn6_rho": (
-                    df_simulation.select((pl.col("bayes_knn6_rho") - rho) ** 2).sum()
-                    / simulations
-                ).item(),
-                # Bayes Base (no spatial weight)
-                "bayes_base_intercept": (
-                    df_simulation.select(
-                        (pl.col("bayes_base_intercept") - 4) ** 2
-                    ).sum()
-                    / simulations
-                ).item(),
-                "bayes_base_X1": (
-                    df_simulation.select((pl.col("bayes_base_X1") - 5) ** 2).sum()
-                    / simulations
-                ).item(),
-                "bayes_base_X2": (
-                    df_simulation.select((pl.col("bayes_base_X2") - 6) ** 2).sum()
-                    / simulations
-                ).item(),
-                "bayes_base_X3": (
-                    df_simulation.select((pl.col("bayes_base_X3") - 7) ** 2).sum()
-                    / simulations
-                ).item(),
+                # # Bayes Rook
+                # "bayes_rook_intercept": (
+                #     df_simulation.select(
+                #         (pl.col("bayes_rook_intercept") - 4) ** 2
+                #     ).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_rook_X1": (
+                #     df_simulation.select((pl.col("bayes_rook_X1") - 5) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_rook_X2": (
+                #     df_simulation.select((pl.col("bayes_rook_X2") - 6) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_rook_X3": (
+                #     df_simulation.select((pl.col("bayes_rook_X3") - 7) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_rook_rho": (
+                #     df_simulation.select((pl.col("bayes_rook_rho") - rho) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # # Bayes Queen
+                # "bayes_queen_intercept": (
+                #     df_simulation.select(
+                #         (pl.col("bayes_queen_intercept") - 4) ** 2
+                #     ).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_queen_X1": (
+                #     df_simulation.select((pl.col("bayes_queen_X1") - 5) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_queen_X2": (
+                #     df_simulation.select((pl.col("bayes_queen_X2") - 6) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_queen_X3": (
+                #     df_simulation.select((pl.col("bayes_queen_X3") - 7) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_queen_rho": (
+                #     df_simulation.select((pl.col("bayes_queen_rho") - rho) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # # Bayes KNN6
+                # "bayes_knn6_intercept": (
+                #     df_simulation.select(
+                #         (pl.col("bayes_knn6_intercept") - 4) ** 2
+                #     ).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_knn6_X1": (
+                #     df_simulation.select((pl.col("bayes_knn6_X1") - 5) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_knn6_X2": (
+                #     df_simulation.select((pl.col("bayes_knn6_X2") - 6) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_knn6_X3": (
+                #     df_simulation.select((pl.col("bayes_knn6_X3") - 7) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_knn6_rho": (
+                #     df_simulation.select((pl.col("bayes_knn6_rho") - rho) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # # Bayes Base (no spatial weight)
+                # "bayes_base_intercept": (
+                #     df_simulation.select(
+                #         (pl.col("bayes_base_intercept") - 4) ** 2
+                #     ).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_base_X1": (
+                #     df_simulation.select((pl.col("bayes_base_X1") - 5) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_base_X2": (
+                #     df_simulation.select((pl.col("bayes_base_X2") - 6) ** 2).sum()
+                #     / simulations
+                # ).item(),
+                # "bayes_base_X3": (
+                #     df_simulation.select((pl.col("bayes_base_X3") - 7) ** 2).sum()
+                #     / simulations
+                # ).item(),
                 # Frequency Rook
                 "freq_rook_intercept": (
                     df_simulation.select((pl.col("freq_rook_intercept") - 1) ** 2).sum()
@@ -410,6 +437,23 @@ class SpatialReg(DataPull):
                 ).item(),
                 "freq_base_X3": (
                     df_simulation.select((pl.col("freq_base_X3") - 7) ** 2).sum()
+                    / simulations
+                ).item(),
+                # Tensor regression
+                                "freq_tensor_intercept": (
+                    df_simulation.select((pl.col("freq_tensor_intercept") - 4) ** 2).sum()
+                    / simulations
+                ).item(),
+                "freq_tensor_X1": (
+                    df_simulation.select((pl.col("freq_tensor_X1") - 5) ** 2).sum()
+                    / simulations
+                ).item(),
+                "freq_tensor_X2": (
+                    df_simulation.select((pl.col("freq_tensor_X2") - 6) ** 2).sum()
+                    / simulations
+                ).item(),
+                "freq_tensor_X3": (
+                    df_simulation.select((pl.col("freq_tensor_X3") - 7) ** 2).sum()
                     / simulations
                 ).item(),
             }
