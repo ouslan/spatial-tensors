@@ -1,12 +1,11 @@
 \documentclass{article}
 \usepackage{geometry}
 \geometry{a4paper, margin=1in}
-\usepackage{enumitem}
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
 \usepackage{amsmath}
 \usepackage{float}
-
+\usepackage[inline,shortlabels]{enumitem}
 \begin{document}
 
 % Cover Page
@@ -233,12 +232,86 @@ implementing this would give the following grpah
 	\caption{Basis spline functions}
 \end{figure}
 
+
+using a penalized of the tensor folloss the following format:
+
+$$
+	\min{||y+ f_{xz}||^2_2 + \lambda ||f_{xz}||^2_2}
+$$
+
+
+\subsection{Cobb-Douglas Implementation}
+
+An implementation of this method were it would be of interest is in the production function Cobb-Douglas where there is not much litereature in the effects of spatial
+component. The Cobb-Douglas is given by the following equation:
+$$
+	Y = A K^\alpha L^\beta
+$$
+
+Where:
+\begin{enumerate}[(a)]
+	\item $Y$ is the total output (real GDP) produced.
+	\item $A$ is total factor productivity (TFP), capturing the efficiency with which inputs are used.
+	\item $K$ is the quantity of physical capital used in production.
+	\item $L$ is the quantity of labor employed.
+	\item $\alpha$ is the output elasticity of capital, representing the percentage change in output resulting from a 1\% change in capital, holding labor constant.
+	\item $\beta$ is the output elasticity of labor, representing the percentage change in output resulting from a 1\% change in labor, holding capital constant.
+\end{enumerate}
+
+
+Then we add an error term $\epsilon$ where it comes from a normal distribution with mean $0$ and constant variance $\sigma^2$
+\begin{equation}
+	\log(Y)   = \log(A) + \alpha \log(K) + \beta \log(L) +\epsilon ; \quad \epsilon \sim N(0,\sigma^2)
+\end{equation}
+This functional form assumes constant returns to scale if $\alpha + \beta = 1$, increasing returns to scale if $\alpha + \beta > 1$, and decreasing returns to scale if $\alpha + \beta < 1$.
+
+Turnig this to a stochastic model we convert log both side to get the following:
+
+\[
+	\begin{split}
+		Y         & = A K^\alpha L^\beta                                  \\
+		\log{(Y)} & = \log{(A K^\alpha L^\beta)}                          \\
+		\log(Y)   & = \log(A) + \alpha \log(K) + \beta \log(L) + \epsilon
+	\end{split}
+\]
+
+Returning to the original form would give:
+\begin{equation}
+	Y = A K^\alpha L^\beta e^{\epsilon}
+\end{equation}
+
+Now Turning the Cobb-Douglas into a panel form is given by the follwoing model:
+\begin{equation}
+	y_{it} = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \epsilon_{it}
+\end{equation}
+
+where:
+\begin{enumerate}[(a)]
+	\item $\log(A)_{it} \equiv \mu_i + \gamma_t + \epsilon_{it}$
+	\item $\log(L)_{it} \equiv l_{it}$
+	\item $\log(K)_{it} \equiv k_{it}$
+\end{enumerate}
+
+Using the notation form the previos section we can add the spatial componant to the Cobb-Douglas function and returning as the orinal function is as follwos:
+\[
+	\begin{split}
+		y_{it}       & = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \rho \sum_{j=1}^N w_{ij} y_{jt} + \epsilon_{it} \\
+		\log(Y_{it}) & = \log(A_{it}) + \alpha \log(K_{it}) + \beta \log(L_{it}) + \rho \sum_{j=1}^N w_{ij} \log(Y_{jt})   \\
+		Y_{it}       & = A_{it} K^\alpha_{it} L^\beta_{it} \exp \left\{ \rho \sum_{j=1}^N w_{ij} \log(Y_{jt}) \right\}     \\
+		Y_{it}       & = A_{it} K^\alpha_{it} L^\beta_{it} e^{\rho \sum_{j=1}^N w_{ij} \log(Y_{jt})}
+	\end{split}
+\]
+
+\begin{equation}
+	Y_{it} = A_{it} K^\alpha_{it} L^\beta_{it} \prod_{j=1}^N Y_{it}^{\rho w_{ij}}
+\end{equation}
+
 \section{Prototype Design and Implementation}
 
 We will simulate data using the following structure:
 
 \begin{equation}
-	y \sim \alpha + \sum^p_{i=1} x_{it} \beta_i + \rho \sum^N_{j=1} w_{ij} x_{jt} + \epsilon
+	y \sim \alpha + \sum^p_{i=1} x_{it} \beta_i + \rho \sum^N_{j=1} w_{ij} y_{jt} + \epsilon
 \end{equation}
 
 With $\epsilon \sim N(0,\sigma^2)$ and multiple forms of $W$ (rook, queen, KNN, etc.) used for robustness testing.
