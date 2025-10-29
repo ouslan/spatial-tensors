@@ -1,5 +1,5 @@
 # Fdb version 4
-["bibtex aux/proporsal"] 0 "aux/proporsal.aux" "aux/proporsal.bbl" "aux/proporsal" 1758288499.72991 0
+["bibtex aux/proporsal"] 0 "aux/proporsal.aux" "aux/proporsal.bbl" "aux/proporsal" 1761765002.3739 0
   "/usr/share/texmf-dist/bibtex/bst/base/plain.bst" 1755987285 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   "aux/proporsal.aux" 0 -1 0 "pdflatex"
   "reference.bib" 0 -1 0 ""
@@ -7,7 +7,7 @@
   "aux/proporsal.bbl"
   "aux/proporsal.blg"
   (rewritten before read)
-["pdflatex"] 1758288498.33885 "proporsal.tex" "out/proporsal.pdf" "proporsal" 1758288499.7302 0
+["pdflatex"] 1761765001.54008 "proporsal.tex" "out/proporsal.pdf" "proporsal" 1761765002.37405 0
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1755987285 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1755987285 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmbx9.tfm" 1755987285 1328 5442e22a7072966dbaf88ca900acf3f0 ""
@@ -75,16 +75,18 @@
   "/usr/share/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty" 1755987285 9714 ba3194bd52c8499b3f1e3eb91d409670 ""
   "/usr/share/texmf-dist/tex/latex/url/url.sty" 1755987285 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1755987285 42087 b0f9697c952c8f5a8eede4134282cb0d ""
-  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1756991674 5306876 69c328245ae101f6bc10b01e1f2bf9d5 ""
-  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1756991829 2008238 4fdc78b0d3e27ec733e365bc775aa59e ""
-  "assets/kmodel.png" 1757614796.60335 114313 aba0827bb493b7a7dd99eb0094ff39f9 ""
-  "assets/logo.png" 1757614796.60383 114926 83fc8dc3076caebdf28822984c6c3793 ""
-  "assets/queens.png" 1758287410.45009 54958 602cf171c1a51cf6c55ecb04f7673896 ""
-  "assets/rook.png" 1758286822.18787 31030 8fb9706e154d8da92ec578a4fe53876d ""
-  "aux/proporsal.aux" 1758288499.53224 2127 0ca6cb4a7f0dc946da240c136ed7c01c "pdflatex"
+  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1761429161 5306876 69c328245ae101f6bc10b01e1f2bf9d5 ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1761429143 2008254 1b7a1230ca4c9d856a3419b5a70bc012 ""
+  "assets/b-splines.png" 1761763992.73628 103137 71467422bb70e9b9e83255e01ea4dc92 ""
+  "assets/kmodel.png" 1761757309.67328 114313 aba0827bb493b7a7dd99eb0094ff39f9 ""
+  "assets/logo.png" 1761757309.67482 114926 83fc8dc3076caebdf28822984c6c3793 ""
+  "assets/queens.png" 1761757309.67482 54958 602cf171c1a51cf6c55ecb04f7673896 ""
+  "assets/rook.png" 1761757309.67482 31030 8fb9706e154d8da92ec578a4fe53876d ""
+  "assets/tensor.png" 1761764978.25637 900802 8eff9841c79a426ce1bf788cb41e9725 ""
+  "aux/proporsal.aux" 1761765002.27567 2561 33a90a4147dd04c1bbce7aa07a2ab6b5 "pdflatex"
   "aux/proporsal.bbl" 0 -1 0 "bibtex aux/proporsal"
-  "aux/proporsal.out" 1758288499.53416 1304 595641d0e9b6f85b5ec85b217803a60c "pdflatex"
-  "proporsal.tex" 1758288497.69202 7384 f9f2aed21d2d5780643c24a83b0234c3 ""
+  "aux/proporsal.out" 1761765002.2764 1585 4f16e59b1fb6555c2c2cedf719c8da48 "pdflatex"
+  "proporsal.tex" 1761764999.10443 8625 a64d4fee75c0dcd32891807371e1db86 ""
   (generated)
   "aux/proporsal.aux"
   "aux/proporsal.log"

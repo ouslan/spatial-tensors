@@ -143,6 +143,8 @@ Where $W$ is predefined by the researcher, though in practice the actual spatial
 
 \section{Research Plan and Methodology}
 
+
+\subsection{Model Comparison}
 We begin with the classical Ordinary Least Squares (OLS) regression:
 
 \begin{equation}
@@ -191,6 +193,45 @@ The semi-parametric model with a spatial smoother can be expressed as:
 Where $C_i$ is the centroid of each observation and $f(C_i)$ is a spatial smoothing function.
 
 We hypothesize that semi-parametric models may outperform spatial regression models, especially when the true $W$ matrix is unknown or misspecified.
+
+\subsection{Spatial Smoother}
+
+Previously it was motioned that $f(C_i)$ would be the penalized spatial smoother used as an alternative to using the weight to remove the spatial correlation. Stratign from the basis
+function we can express any X as a sum of cubic function. This is can be showen in the following equation:
+\begin{equation}
+	f(x) = \sum^{k}_{j=1}b_j(x) \beta_j
+\end{equation}
+
+This would generate the following graph.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{assets/b-splines.png}
+	\caption{Basis spline functions}
+\end{figure}
+
+Addapting to include other variables can be done by first selecting the basis function for each factor.
+$$
+	f_x(x) = \sum^{k}_{j=1}b_j(x) \beta_j \quad f_z(z) = \sum^{k}_{j=1}d_j(z) \delta_j
+$$
+
+we can then let $b_j(x)$ vary smoothly accoriding to $z$ this give us the following:
+$$
+	\beta_i(z) = \sum_{l=1}^{L} \delta_{jl}d_l(z)
+$$
+
+which gives:
+
+\begin{equation}
+	f_{xz}(x,z)= \sum^{k}_{j=1}\sum_{l=1}^{L} \delta_{jl}d_l(z) \beta_i(x)
+\end{equation}
+
+
+implementing this would give the following grpah
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{assets/tensor.png}
+	\caption{Basis spline functions}
+\end{figure}
 
 \section{Prototype Design and Implementation}
 
