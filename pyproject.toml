@@ -9,6 +9,7 @@ dependencies = [
     "altair[all]>=5.5.0",
     "arviz[all]>=0.21.0",
     "bambi>=0.15.0",
+    "duckdb>=1.4.1",
     "geopandas>=1.0.1",
     "libpysal>=4.13.0",
     "matplotlib>=3.10.1",
@@ -17,12 +18,14 @@ dependencies = [
     "polars>=1.29.0",
     "pygam>=0.10.1",
     "pysal>=25.1",
+    "requests>=2.32.3",
     "spreg>=1.8.2",
 ]
 
 [dependency-groups]
 dev = [
     "jupyter>=1.1.1",
+    "jupytext>=1.17.3",
     "pre-commit>=4.2.0",
     "pynvim>=0.5.2",
 ]

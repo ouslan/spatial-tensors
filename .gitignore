@@ -169,3 +169,6 @@ docs/papers/*.pdf
 */*.fdb_latexmk
 */*.fls 
 docs/proporsal/*.out
+*.ddb
+*.zip
+*.json
