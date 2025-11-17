@@ -46,7 +46,8 @@
 \newpage
 
 \begin{abstract}
-	This research aims to compare the performance of spatial regression models that rely on predefined weight matrices with that of semi-parametric regression models using spatial smoothers.
+	This research aims to compare the performance of spatial regression models that rely on predefined
+	weight matrices with that of semi-parametric regression models using spatial smoothers.
 \end{abstract}
 
 \section{Proposal Keywords}
@@ -54,12 +55,65 @@ Spatial simulation, Spatial Regressions, GAMs, Tensor Products
 
 \section{Introduction}
 
-Regression models are commonly used to simplify and represent complex real-world relationships. Since all models are approximations, additional components are often introduced to better capture underlying patterns. Spatial models are no exception and are not a novel concept. Through simulation, this research seeks to understand the limitations of various spatial models and identify contexts in which specific models are preferable.
+Economic models are commonly used to simplify and represent complex real-world relationships.
+Since all models are approximations, additional components are often introduced to better capture
+underlying patterns. Especially in micro economices where the assumption of independent and identically
+distributed (i.i.d) can not be reasonably assumed due to its time factor or close proximity making
+them influence each outer. Spatial models are not a novel concept. Through simulation,
+this research seeks to understand the limitations of various spatial models and identify contexts in
+which specific models are preferable.
 
-We also aim to address key issues using Bayesian inference on one of the models. As a practical application, we will implement the models using data from the Quarterly Census of Employment and Wages (QCEW).
+More specifically in this research we seek to find reasonable strategies to best specify spatial models,
+where are it can be reasonably be presumed that there is some spatial effect but there is no clear answer
+on how spatial agents relate to each other.
+
 
 \section{Background and Motivation}
 
+Starting with out, economic theory tells that you can model the productivity of a given economy as a function
+of labor $(L)$ and capital $(K)$ this can be model in the following equation.
+
+$$
+	Y = A K^\alpha L^\beta
+$$
+
+Where:
+\begin{itemize}
+	\item $Y$ is the total output (real GDP) produced.
+	\item $A$ is total factor productivity (TFP), capturing the efficiency with which inputs are used.
+	\item $K$ is the quantity of physical capital used in production.
+	\item $L$ is the quantity of labor employed.
+	\item $\alpha$ is the output elasticity of capital, representing the percentage change in output
+	      resulting from a 1\% change in capital, holding labor constant.
+	\item $\beta$ is the output elasticity of labor, representing the percentage change in output
+	      resulting from a 1\% change in labor, holding capital constant.
+\end{itemize}
+
+In practice, though varios data sources $L,K$ and $Y$ are known and $\alpha$ and $\beta$ are unknown. The unknown
+parameters are of special interest to economist and for public policy as they highlight areas where local government
+could invest to increase productivity. However as this models are representations of more complex models is
+reasonable to asume there is some unseen components in our models. An example of this could be the pretense of
+underground economies, this referring to transactions that could be reflected in the productivity but can not
+be reasonably measured through the official means and this could introduce uncertainty into our model.
+
+Turning the Cobb-Douglas equation into a stochastic model can be done in the following format:
+\[
+	\begin{split}
+		Y         & = A K^\alpha L^\beta                                                             \\
+		\log{(Y)} & = \log{(A K^\alpha L^\beta)}                                                     \\
+		\log(Y)   & = \log(A) + \alpha \log(K) + \beta \log(L) +\epsilon ; \epsilon \sim N(0,\sigma)
+	\end{split}
+\]
+
+Returning to the original form would give:
+\begin{equation}
+	Y = A K^\alpha L^\beta e^{\epsilon}
+\end{equation}
+
+\subsection{Spatial Modeling}
+
+Turning the Cobb-Douglas into a stochastic model that follows the convential linear regression gives access
+to the ability to introduce space into the model. However it is importent to devine space in this context.
 Spatial regression models are relatively simple yet expressive tools. The Spatial Durbin Model (SDM) can be expressed as:
 
 \begin{equation}
@@ -124,9 +178,33 @@ Another approach is the k-nearest neighbors (KNN) model, where influence decreas
 
 Clearly, there are numerous ways to define the $W$ matrix, and no universally accepted method exists for choosing the most appropriate one. In practice, $W$ is unknown and selecting it remains a major modeling challenge.
 
-\section{Systematic Literature Review}
+\subsection{spatial Cobb-Douglas}
 
-% [This section can be expanded with summaries of existing works and citations.]
+Now Turning the Cobb-Douglas into a panel form is given by the follwoing model:
+\begin{equation}
+	y_{it} = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \epsilon_{it}
+\end{equation}
+
+where:
+\begin{enumerate}[(a)]
+	\item $\log(A)_{it} \equiv \mu_i + \gamma_t + \epsilon_{it}$
+	\item $\log(L)_{it} \equiv l_{it}$
+	\item $\log(K)_{it} \equiv k_{it}$
+\end{enumerate}
+
+Using the notation form the previos section we can add the spatial componant to the Cobb-Douglas function and returning as the orinal function is as follwos:
+\[
+	\begin{split}
+		y_{it}       & = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \rho \sum_{j=1}^N w_{ij} y_{jt} + \epsilon_{it} \\
+		\log(Y_{it}) & = \log(A_{it}) + \alpha \log(K_{it}) + \beta \log(L_{it}) + \rho \sum_{j=1}^N w_{ij} \log(Y_{jt})   \\
+		Y_{it}       & = A_{it} K^\alpha_{it} L^\beta_{it} \exp \left\{ \rho \sum_{j=1}^N w_{ij} \log(Y_{jt}) \right\}     \\
+		Y_{it}       & = A_{it} K^\alpha_{it} L^\beta_{it} e^{\rho \sum_{j=1}^N w_{ij} \log(Y_{jt})}
+	\end{split}
+\]
+
+\begin{equation}
+	Y_{it} = A_{it} K^\alpha_{it} L^\beta_{it} \prod_{j=1}^N Y_{it}^{\rho w_{ij}}
+\end{equation}
 
 \section{Aims and Objectives}
 
@@ -280,31 +358,7 @@ Returning to the original form would give:
 	Y = A K^\alpha L^\beta e^{\epsilon}
 \end{equation}
 
-Now Turning the Cobb-Douglas into a panel form is given by the follwoing model:
-\begin{equation}
-	y_{it} = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \epsilon_{it}
-\end{equation}
 
-where:
-\begin{enumerate}[(a)]
-	\item $\log(A)_{it} \equiv \mu_i + \gamma_t + \epsilon_{it}$
-	\item $\log(L)_{it} \equiv l_{it}$
-	\item $\log(K)_{it} \equiv k_{it}$
-\end{enumerate}
-
-Using the notation form the previos section we can add the spatial componant to the Cobb-Douglas function and returning as the orinal function is as follwos:
-\[
-	\begin{split}
-		y_{it}       & = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \rho \sum_{j=1}^N w_{ij} y_{jt} + \epsilon_{it} \\
-		\log(Y_{it}) & = \log(A_{it}) + \alpha \log(K_{it}) + \beta \log(L_{it}) + \rho \sum_{j=1}^N w_{ij} \log(Y_{jt})   \\
-		Y_{it}       & = A_{it} K^\alpha_{it} L^\beta_{it} \exp \left\{ \rho \sum_{j=1}^N w_{ij} \log(Y_{jt}) \right\}     \\
-		Y_{it}       & = A_{it} K^\alpha_{it} L^\beta_{it} e^{\rho \sum_{j=1}^N w_{ij} \log(Y_{jt})}
-	\end{split}
-\]
-
-\begin{equation}
-	Y_{it} = A_{it} K^\alpha_{it} L^\beta_{it} \prod_{j=1}^N Y_{it}^{\rho w_{ij}}
-\end{equation}
 
 \section{Prototype Design and Implementation}
 
