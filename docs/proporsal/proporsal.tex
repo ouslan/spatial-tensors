@@ -311,11 +311,22 @@ implementing this would give the following grpah
 \end{figure}
 
 
-using a penalized of the tensor folloss the following format:
+We express the tensor–product smoother using the tensor (Kronecker) product
+design matrix
+\[
+	X_{\text{tensor}} = B \,\otimes\, D ,
+\]
+where \(B\) is the spline basis for \(x\) and \(D\) is the spline basis for \(z\).
 
-$$
-	\min{||y+ f_{xz}||^2_2 + \lambda ||f_{xz}||^2_2}
-$$
+The penalized estimation is then obtained by solving the ridge–regularized
+least-squares criterion
+\[
+	\min_{\delta} \; \|y - X_{\text{tensor}} \delta \|_2^2
+	\;+\;
+	\alpha \, \|\delta\|_2^2 .
+\]
+
+
 
 
 \subsection{Cobb-Douglas Implementation}
@@ -387,6 +398,82 @@ And by comparing estimated vs. true coefficients:
 	\frac{\sum_{n=1}^N(\beta-\hat{\beta}_{SDM})^2}{N}; \quad \frac{\sum_{n=1}^N(\beta-\hat{\beta}_{GAM})^2}{N}
 	\label{eq:pref2}
 \end{equation}
+
+\section{Preliminary resulats}
+
+In the following results are for a reguar regression model specified in the following way:
+
+We consider a set of $N$ observations generated from a spatial regression
+framework.  Let $y$ denote the response vector, $X = (X_1, X_2, X_3)$ the
+explanatory variables, and $W$ a spatial weights matrix (Rook, Queen, or
+$k$-nearest neighbors with $k=6$).  The spatial Durbin model (SDM) used in the
+simulation study is given by
+\begin{equation}
+	y = \rho Wy + X\beta + \varepsilon,
+	\label{eq:sdm}
+\end{equation}
+where $\rho$ is the spatial autoregressive parameter, $\beta$ are the direct effects
+
+The error term follows
+\[
+	\varepsilon \sim \mathcal{N}(0, \sigma^2 I_N).
+\]
+
+The true parameter values in the data-generating process are
+\[
+	\beta = (4,5,6,7)^{\top}, \qquad \rho = 0.7.
+\]
+
+Looking over the results we see that the best preforming model is the Queens
+model as this is the model used to generate the data. The second best preforming
+model is the penalized tensor products. This shows that if there is no reasonable
+argument for picking the spatial weights matrix the penalized tensor products are a
+reasonable starting point for controlling for spatial variability.
+
+\begin{table}[H]
+	\centering
+	\caption{Simulation results for 1000 runs comparing spatial specifications}
+	\begin{tabular}{lcccccc}
+		\hline
+		 & \textbf{Rook} & \textbf{Queen} & \textbf{KNN (6)} & \textbf{Tensor} & \textbf{Base} \\
+		\hline
+		Intercept
+		 & 3973.28
+		 & 0.40
+		 & 92.49
+		 & 8252.62
+		 & 7177.34                                                                             \\
+
+		$X_1$
+		 & 0.74
+		 & 0.0032
+		 & 0.30
+		 & 0.21
+		 & 1.22                                                                                \\
+
+		$X_2$
+		 & 0.90
+		 & 0.0032
+		 & 0.30
+		 & 0.26
+		 & 1.57                                                                                \\
+
+		$X_3$
+		 & 1.04
+		 & 0.0031
+		 & 0.39
+		 & 0.27
+		 & 1.92                                                                                \\
+
+		$\rho$
+		 & 0.43
+		 & 0.000024
+		 & 0.0060
+		 & --
+		 & --                                                                                  \\
+		\hline
+	\end{tabular}
+\end{table}
 
 \newpage
 

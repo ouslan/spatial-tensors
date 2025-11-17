@@ -53,7 +53,7 @@ class SpatialReg(DataPull):
             X[:, i] = rng.normal(loc=mu, scale=sigma, size=n_obs)
 
         # Define Beta coefficients
-        beta = np.array([4, 5, 6    , 7])
+        beta = np.array([4, 5, 6, 7])
 
         # Compute XB matrix
         xb = X @ beta
@@ -72,7 +72,7 @@ class SpatialReg(DataPull):
         gdf["X_3"] = X[:, 3]
         gdf["centroid"] = gdf.centroid
         gdf["lat"] = gdf["centroid"].x
-        gdf["lon"] = gdf["centroid"].y 
+        gdf["lon"] = gdf["centroid"].y
         gdf["w_rook"] = weights.lag_spatial(self.wr, y_true)
         gdf["w_queen"] = weights.lag_spatial(self.wq, y_true)
         gdf["w_knn6"] = weights.lag_spatial(self.wk6, y_true)
@@ -90,7 +90,7 @@ class SpatialReg(DataPull):
                 "X_2",
                 "X_3",
                 "centroid",
-                "lat", 
+                "lat",
                 "lon",
                 "w_rook",
                 "w_queen",
@@ -440,8 +440,10 @@ class SpatialReg(DataPull):
                     / simulations
                 ).item(),
                 # Tensor regression
-                                "freq_tensor_intercept": (
-                    df_simulation.select((pl.col("freq_tensor_intercept") - 4) ** 2).sum()
+                "freq_tensor_intercept": (
+                    df_simulation.select(
+                        (pl.col("freq_tensor_intercept") - 4) ** 2
+                    ).sum()
                     / simulations
                 ).item(),
                 "freq_tensor_X1": (
