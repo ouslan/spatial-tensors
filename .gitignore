@@ -165,10 +165,11 @@ cython_debug/
 docs/papers/*.pdf
 
 # Remove Latex stuff
-*/*.aux
-*/*.fdb_latexmk
-*/*.fls 
-docs/proporsal/*.out
+*.aux
+*.fdb_latexmk
+*.fls 
+*.out
+*.gz
 *.ddb
 *.zip
 *.json

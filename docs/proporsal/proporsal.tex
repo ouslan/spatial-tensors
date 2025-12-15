@@ -112,8 +112,8 @@ Returning to the original form would give:
 
 \subsection{Spatial Modeling}
 
-Turning the Cobb-Douglas into a stochastic model that follows the convential linear regression gives access
-to the ability to introduce space into the model. However it is importent to devine space in this context.
+Turning the Cobb-Douglas into a stochastic model that follows the conventual linear regression gives access
+to the ability to introduce space into the model. However it is important to define space in this context.
 Spatial regression models are relatively simple yet expressive tools. The Spatial Durbin Model (SDM) can be expressed as:
 
 \begin{equation}
@@ -180,19 +180,22 @@ Clearly, there are numerous ways to define the $W$ matrix, and no universally ac
 
 \subsection{spatial Cobb-Douglas}
 
-Now Turning the Cobb-Douglas into a panel form is given by the follwoing model:
+To introduce space into the Cobb-Douglas we tu turn the model into panel. This is
+shown in the following model:
 \begin{equation}
 	y_{it} = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \epsilon_{it}
 \end{equation}
 
-where:
+Where:
 \begin{enumerate}[(a)]
 	\item $\log(A)_{it} \equiv \mu_i + \gamma_t + \epsilon_{it}$
 	\item $\log(L)_{it} \equiv l_{it}$
 	\item $\log(K)_{it} \equiv k_{it}$
 \end{enumerate}
 
-Using the notation form the previos section we can add the spatial componant to the Cobb-Douglas function and returning as the orinal function is as follwos:
+Contextualizing the pannel form of the Cobb-Douglas tell us that you can deconstroc
+a given economy into smaller sub economies that share the same elasticities for their labor
+and capital but differ in their quantities of capital and labor. Using the notation form the previos section we can add the spatial componant to the Cobb-Douglas function and returning as the orinal function is as follwos:
 \[
 	\begin{split}
 		y_{it}       & = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \rho \sum_{j=1}^N w_{ij} y_{jt} + \epsilon_{it} \\
@@ -205,6 +208,12 @@ Using the notation form the previos section we can add the spatial componant to 
 \begin{equation}
 	Y_{it} = A_{it} K^\alpha_{it} L^\beta_{it} \prod_{j=1}^N Y_{it}^{\rho w_{ij}}
 \end{equation}
+
+Introducing space in this way it tell how this smaller economies are affected by the
+overall output of neighbors with a given relationship $W$. However as expalain previously
+there is no universally accepted relationship $W$ and it is possible that depending the
+economy looked at this $W$ might be compleatly different and more complex that would be virtually
+imposible to pick an appropriate $W$ for the model.
 
 \section{Aims and Objectives}
 
