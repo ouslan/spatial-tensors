@@ -1,12 +1,11 @@
 \documentclass{article}
 \usepackage{geometry}
 \geometry{a4paper, margin=1in}
-\usepackage{enumitem}
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
 \usepackage{amsmath}
 \usepackage{float}
-
+\usepackage[inline,shortlabels]{enumitem}
 \begin{document}
 
 % Cover Page
@@ -47,7 +46,8 @@
 \newpage
 
 \begin{abstract}
-	This research aims to compare the performance of spatial regression models that rely on predefined weight matrices with that of semi-parametric regression models using spatial smoothers.
+	This research aims to compare the performance of spatial regression models that rely on predefined
+	weight matrices with that of semi-parametric regression models using spatial smoothers.
 \end{abstract}
 
 \section{Proposal Keywords}
@@ -55,12 +55,65 @@ Spatial simulation, Spatial Regressions, GAMs, Tensor Products
 
 \section{Introduction}
 
-Regression models are commonly used to simplify and represent complex real-world relationships. Since all models are approximations, additional components are often introduced to better capture underlying patterns. Spatial models are no exception and are not a novel concept. Through simulation, this research seeks to understand the limitations of various spatial models and identify contexts in which specific models are preferable.
+Economic models are commonly used to simplify and represent complex real-world relationships.
+Since all models are approximations, additional components are often introduced to better capture
+underlying patterns. Especially in micro economices where the assumption of independent and identically
+distributed (i.i.d) can not be reasonably assumed due to its time factor or close proximity making
+them influence each outer. Spatial models are not a novel concept. Through simulation,
+this research seeks to understand the limitations of various spatial models and identify contexts in
+which specific models are preferable.
 
-We also aim to address key issues using Bayesian inference on one of the models. As a practical application, we will implement the models using data from the Quarterly Census of Employment and Wages (QCEW).
+More specifically in this research we seek to find reasonable strategies to best specify spatial models,
+where are it can be reasonably be presumed that there is some spatial effect but there is no clear answer
+on how spatial agents relate to each other.
+
 
 \section{Background and Motivation}
 
+Starting with out, economic theory tells that you can model the productivity of a given economy as a function
+of labor $(L)$ and capital $(K)$ this can be model in the following equation.
+
+$$
+	Y = A K^\alpha L^\beta
+$$
+
+Where:
+\begin{itemize}
+	\item $Y$ is the total output (real GDP) produced.
+	\item $A$ is total factor productivity (TFP), capturing the efficiency with which inputs are used.
+	\item $K$ is the quantity of physical capital used in production.
+	\item $L$ is the quantity of labor employed.
+	\item $\alpha$ is the output elasticity of capital, representing the percentage change in output
+	      resulting from a 1\% change in capital, holding labor constant.
+	\item $\beta$ is the output elasticity of labor, representing the percentage change in output
+	      resulting from a 1\% change in labor, holding capital constant.
+\end{itemize}
+
+In practice, though varios data sources $L,K$ and $Y$ are known and $\alpha$ and $\beta$ are unknown. The unknown
+parameters are of special interest to economist and for public policy as they highlight areas where local government
+could invest to increase productivity. However as this models are representations of more complex models is
+reasonable to asume there is some unseen components in our models. An example of this could be the pretense of
+underground economies, this referring to transactions that could be reflected in the productivity but can not
+be reasonably measured through the official means and this could introduce uncertainty into our model.
+
+Turning the Cobb-Douglas equation into a stochastic model can be done in the following format:
+\[
+	\begin{split}
+		Y         & = A K^\alpha L^\beta                                                             \\
+		\log{(Y)} & = \log{(A K^\alpha L^\beta)}                                                     \\
+		\log(Y)   & = \log(A) + \alpha \log(K) + \beta \log(L) +\epsilon ; \epsilon \sim N(0,\sigma)
+	\end{split}
+\]
+
+Returning to the original form would give:
+\begin{equation}
+	Y = A K^\alpha L^\beta e^{\epsilon}
+\end{equation}
+
+\subsection{Spatial Modeling}
+
+Turning the Cobb-Douglas into a stochastic model that follows the conventual linear regression gives access
+to the ability to introduce space into the model. However it is important to define space in this context.
 Spatial regression models are relatively simple yet expressive tools. The Spatial Durbin Model (SDM) can be expressed as:
 
 \begin{equation}
@@ -125,82 +178,213 @@ Another approach is the k-nearest neighbors (KNN) model, where influence decreas
 
 Clearly, there are numerous ways to define the $W$ matrix, and no universally accepted method exists for choosing the most appropriate one. In practice, $W$ is unknown and selecting it remains a major modeling challenge.
 
-\section{Systematic Literature Review}
+\subsection{spatial Cobb-Douglas}
 
-% [This section can be expanded with summaries of existing works and citations.]
+To introduce space into the Cobb-Douglas we tu turn the model into panel. This is
+shown in the following model:
+\begin{equation}
+	y_{it} = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \epsilon_{it}
+\end{equation}
+
+Where:
+\begin{enumerate}[(a)]
+	\item $\log(A)_{it} \equiv \mu_i + \gamma_t + \epsilon_{it}$
+	\item $\log(L)_{it} \equiv l_{it}$
+	\item $\log(K)_{it} \equiv k_{it}$
+\end{enumerate}
+
+Contextualizing the pannel form of the Cobb-Douglas tell us that you can deconstroc
+a given economy into smaller sub economies that share the same elasticities for their labor
+and capital but differ in their quantities of capital and labor. Using the notation form the previos section we can add the spatial componant to the Cobb-Douglas function and returning as the orinal function is as follwos:
+\[
+	\begin{split}
+		y_{it}       & = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \rho \sum_{j=1}^N w_{ij} y_{jt} + \epsilon_{it} \\
+		\log(Y_{it}) & = \log(A_{it}) + \alpha \log(K_{it}) + \beta \log(L_{it}) + \rho \sum_{j=1}^N w_{ij} \log(Y_{jt})   \\
+		Y_{it}       & = A_{it} K^\alpha_{it} L^\beta_{it} \exp \left\{ \rho \sum_{j=1}^N w_{ij} \log(Y_{jt}) \right\}     \\
+		Y_{it}       & = A_{it} K^\alpha_{it} L^\beta_{it} e^{\rho \sum_{j=1}^N w_{ij} \log(Y_{jt})}
+	\end{split}
+\]
+
+\begin{equation}
+	Y_{it} = A_{it} K^\alpha_{it} L^\beta_{it} \prod_{j=1}^N Y_{it}^{\rho w_{ij}}
+\end{equation}
+
+Introducing space in this way it tell how this smaller economies are affected by the
+overall output of neighbors with a given relationship $W$. However as expalain previously
+there is no universally accepted relationship $W$ and it is possible that depending the
+economy looked at this $W$ might be compleatly different and more complex that would be virtually
+imposible to pick an appropriate $W$ for the model.
 
 \section{Aims and Objectives}
 
-The primary objective of this research is to understand and compare the Spatial Durbin Model (SDM) and a semi-parametric model using tensor product smoothers. We will investigate under what circumstances each model performs better in terms of prediction accuracy and reliability. Furthermore, we aim to evaluate trade-offs such as ease of implementation, assumptions, computational cost, and interpretability.
+The primary objective of this research is to examine and compare the performance
+of the Spatial Autoregressive Model (SAR) of the Cobb-Douglas with that of a semi-parametric regression model
+that incorporates tensor-product smoothers. The analysis focuses on identifying
+the conditions under which each modeling approach yields superior predictive
+accuracy and more reliable inference. In addition, this study evaluates key
+trade-offs between the two approaches, including ease of implementation,
+underlying assumptions, computational cost, and interpretability.
 
-We restate the SDM as:
-
-\begin{equation}
-	y = X \beta + \rho W X + \epsilon
-\end{equation}
-
-Where $W$ is predefined by the researcher, though in practice the actual spatial process remains unknown. Choosing an appropriate $W$ is often left to domain experts.
 
 \section{Research Plan and Methodology}
 
-We begin with the classical Ordinary Least Squares (OLS) regression:
+\subsection{Model Comparison}
 
+We begin with the classical Ordinary Least Squares (OLS) regression model,
+specified as
 \begin{equation}
-	y_i = \alpha + \sum^p_{i=1} x_i \beta_i + \epsilon
+	y_i = \alpha + \sum_{j=1}^{p} x_{ij}\beta_j + \epsilon_i,
 	\label{eq:OLS}
 \end{equation}
+where the error terms are assumed to be independently and identically
+distributed.
 
-To account for spatial correlation, we introduce a spatial weight matrix $W$ into the regression:
-
+To account for spatial dependence, a spatial weights matrix $W$ is incorporated
+into the regression framework. One such specification is the Spatial Durbin
+Model (SDM), given by
 \begin{equation}
-	y = X \beta + \rho W X + \epsilon
+	y = X\beta + \rho WX + \epsilon,
 	\label{eq:SDM}
 \end{equation}
-
-Which expands to:
-
+which expands to
 \begin{equation}
-	y_{it} = \alpha + \sum^p_{i=1} x_{it} \beta_i + \rho \sum^N_{j=1} w_{ij} x_{jt} + \epsilon
+	y_{it}
+	=
+	\alpha
+	+ \sum_{j=1}^{p} x_{it,j}\beta_j
+	+ \rho \sum_{k=1}^{N} w_{ik} x_{kt}
+	+ \epsilon_{it}.
 	\label{eq:SDM_exp}
 \end{equation}
 
-Alternatively, spatial terms may be incorporated into the dependent variable:
-
+Alternative spatial specifications incorporate spatial dependence directly into
+the response variable, as in the Spatial Autoregressive (SAR) model,
 \begin{equation}
-	y = \alpha + X \beta + \rho W Y + \epsilon
+	y = \alpha + X\beta + \rho WY + \epsilon,
 	\label{eq:SAR}
 \end{equation}
-
-Or into the error structure:
-
+or into the error structure, as in the Spatial Error Model (SEM),
 \begin{equation}
 	\begin{split}
-		y & = \alpha + X \beta + u  \\
-		u & = \gamma W u + \epsilon
+		y & = \alpha + X\beta + u,  \\
+		u & = \gamma Wu + \epsilon.
 	\end{split}
 	\label{eq:SEM}
 \end{equation}
 
-The semi-parametric model with a spatial smoother can be expressed as:
-
+As an alternative to parametric spatial regression, we consider a
+semi-parametric specification that incorporates spatial dependence through a
+smooth function of location:
 \begin{equation}
-	y = \alpha + \sum^p_{i=1} x_{it} \beta_i + f(C_i) + \epsilon
+	y = \alpha + \sum_{j=1}^{p} x_{it,j}\beta_j + f(C_i) + \epsilon,
 	\label{eq:tensor}
 \end{equation}
+where $C_i$ denotes the centroid coordinates of observation $i$, and
+$f(C_i)$ is a spatial smoothing function constructed using tensor-product
+splines.
 
-Where $C_i$ is the centroid of each observation and $f(C_i)$ is a spatial smoothing function.
+We hypothesize that the semi-parametric model may outperform parametric spatial
+regression models when the true spatial weights matrix $W$ is unknown or
+misspecified, particularly in terms of predictive accuracy and robustness.
+\subsection{Spatial Smoother}
 
-We hypothesize that semi-parametric models may outperform spatial regression models, especially when the true $W$ matrix is unknown or misspecified.
-
-\section{Prototype Design and Implementation}
-
-We will simulate data using the following structure:
-
+As previously noted, the term $f(C_i)$ represents a penalized spatial smoother
+used as an alternative to specifying a spatial weights matrix in order to
+account for spatial correlation. Beginning with a univariate basis expansion,
+any smooth function of a single covariate can be expressed as a linear
+combination of spline basis functions. In particular, a cubic spline
+representation may be written as
 \begin{equation}
-	y \sim \alpha + \sum^p_{i=1} x_{it} \beta_i + \rho \sum^N_{j=1} w_{ij} x_{jt} + \epsilon
+	f(x) = \sum_{j=1}^{k} b_j(x)\,\beta_j.
 \end{equation}
 
-With $\epsilon \sim N(0,\sigma^2)$ and multiple forms of $W$ (rook, queen, KNN, etc.) used for robustness testing.
+This representation generates a smooth curve constructed from a set of local
+basis functions, as illustrated in Figure~\ref{fig:bsplines}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{assets/b-splines.png}
+	\caption{Basis spline functions}
+	\label{fig:bsplines}
+\end{figure}
+
+To extend this framework to multiple variables, a separate basis expansion is
+first specified for each covariate. For two variables $x$ and $z$, these
+expansions take the form
+\[
+	f_x(x) = \sum_{j=1}^{k} b_j(x)\,\beta_j,
+	\qquad
+	f_z(z) = \sum_{j=1}^{k} d_j(z)\,\delta_j.
+\]
+
+The coefficients of the basis functions in one dimension may then be allowed to
+vary smoothly as a function of the other variable. Specifically, letting the
+coefficients $\beta_j$ vary smoothly with respect to $z$ yields
+\[
+	\beta_j(z) = \sum_{l=1}^{L} \delta_{jl} d_l(z).
+\]
+
+Substituting this expression into the original basis expansion produces the
+tensor–product smoother
+\begin{equation}
+	f_{xz}(x,z)
+	=
+	\sum_{j=1}^{k}
+	\sum_{l=1}^{L}
+	\delta_{jl}\,
+	b_j(x)\, d_l(z).
+\end{equation}
+
+Implementing this construction results in a smooth surface over the joint
+domain of $(x,z)$, as illustrated in Figure~\ref{fig:tensor}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{assets/tensor.png}
+	\caption{Tensor-product spline surface}
+	\label{fig:tensor}
+\end{figure}
+
+The tensor–product smoother can be expressed compactly using the tensor
+(Kronecker) product design matrix
+\[
+	X_{\text{tensor}} = B \otimes D,
+\]
+where $B$ denotes the spline basis matrix for $x$ and $D$ denotes the spline
+basis matrix for $z$.
+
+Estimation of the smoother coefficients is carried out by solving the
+ridge–regularized least-squares problem
+\[
+	\min_{\delta}
+	\; \| y - X_{\text{tensor}} \delta \|_2^2
+	\;+\;
+	\alpha \, \| \delta \|_2^2,
+\]
+where the penalty parameter $\alpha$ controls the smoothness of the estimated
+surface.
+
+
+\subsection{Cobb--Douglas Interpretation}
+
+Incorporating a tensor-product spatial smoother into the Cobb--Douglas production
+function yields the following specification:
+\begin{equation}
+	Y_{it}
+	=
+	K_{it}^{\alpha}
+	L_{it}^{\beta}
+	\exp\{ f(\text{lat}_i, \text{lon}_i) + \gamma_t + \epsilon_{it} \},
+	\label{eq:Cobb tensor}
+\end{equation}
+
+This equation serves as the primary model employed in this research. The parametric
+components preserve the standard Cobb--Douglas interpretation of output elasticities
+with respect to capital and labor, while the tensor-product function $f(\text{lat}_i,
+	\text{lon}_i)$ flexibly captures spatial variation in productivity. By modeling spatial
+effects nonparametrically, this approach avoids the need to specify a spatial weights
+matrix and aims to produce more reliable and robust parameter estimates in the presence
+of unknown or complex spatial dependence.
 
 \section{Success and Impact}
 
@@ -219,6 +403,82 @@ And by comparing estimated vs. true coefficients:
 	\frac{\sum_{n=1}^N(\beta-\hat{\beta}_{SDM})^2}{N}; \quad \frac{\sum_{n=1}^N(\beta-\hat{\beta}_{GAM})^2}{N}
 	\label{eq:pref2}
 \end{equation}
+
+\section{Preliminary results}
+
+In the following results are for a regar regression model specified in the following way:
+
+We consider a set of $N$ observations generated from a spatial regression
+framework.  Let $y$ denote the response vector, $X = (X_1, X_2, X_3)$ the
+explanatory variables, and $W$ a spatial weights matrix (Rook, Queen, or
+$k$-nearest neighbors with $k=6$).  The spatial Durbin model (SDM) used in the
+simulation study is given by
+\begin{equation}
+	y = \rho Wy + X\beta + \varepsilon,
+	\label{eq:sdm}
+\end{equation}
+where $\rho$ is the spatial autoregressive parameter, $\beta$ are the direct effects
+
+The error term follows
+\[
+	\varepsilon \sim \mathcal{N}(0, \sigma^2 I_N).
+\]
+
+The true parameter values in the data-generating process are
+\[
+	\beta = (4,5,6,7)^{\top}, \qquad \rho = 0.7.
+\]
+
+Looking over the results we see that the best preforming model is the Queens
+model as this is the model used to generate the data. The second best preforming
+model is the penalized tensor products. This shows that if there is no reasonable
+argument for picking the spatial weights matrix the penalized tensor products are a
+reasonable starting point for controlling for spatial variability.
+
+\begin{table}[H]
+	\centering
+	\caption{Simulation results for 1000 runs comparing spatial specifications}
+	\begin{tabular}{lcccccc}
+		\hline
+		 & \textbf{Rook} & \textbf{Queen} & \textbf{KNN (6)} & \textbf{Tensor} & \textbf{Base} \\
+		\hline
+		Intercept
+		 & 3973.28
+		 & 0.40
+		 & 92.49
+		 & 8252.62
+		 & 7177.34                                                                             \\
+
+		$X_1$
+		 & 0.74
+		 & 0.0032
+		 & 0.30
+		 & 0.21
+		 & 1.22                                                                                \\
+
+		$X_2$
+		 & 0.90
+		 & 0.0032
+		 & 0.30
+		 & 0.26
+		 & 1.57                                                                                \\
+
+		$X_3$
+		 & 1.04
+		 & 0.0031
+		 & 0.39
+		 & 0.27
+		 & 1.92                                                                                \\
+
+		$\rho$
+		 & 0.43
+		 & 0.000024
+		 & 0.0060
+		 & --
+		 & --                                                                                  \\
+		\hline
+	\end{tabular}
+\end{table}
 
 \newpage
 
