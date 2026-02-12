@@ -4,11 +4,8 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Alejandro Ouslan", email = "alejandro.ouslan@upr.edu" }]
-requires-python = ">=3.12"
-dependencies = [
-    "pandas>=3.0.0",
-    "polars>=1.38.1",
-]
+requires-python = ">=3.13"
+dependencies = ["pandas>=3.0.0", "polars>=1.38.1"]
 
 [project.scripts]
 spatial-tensors = "st_repl:main"
@@ -18,8 +15,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = [
-    "jupyter>=1.1.1",
-    "polars>=1.38.1",
-    "pre-commit>=4.5.1",
-]
+dev = ["jupyter>=1.1.1", "polars>=1.38.1", "pre-commit>=4.5.1"]
