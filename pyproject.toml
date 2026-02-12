@@ -1,14 +1,16 @@
 [project]
-name = "spatial_tensors_replications"
+name = "st_repl"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Alejandro Ouslan", email = "alejandro.ouslan@upr.edu" }]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "polars>=1.38.1",
+]
 
 [project.scripts]
-spatial-tensors = "spatial_tensors_replications:main"
+spatial-tensors = "st_repl:main"
 
 [build-system]
 requires = ["hatchling"]
