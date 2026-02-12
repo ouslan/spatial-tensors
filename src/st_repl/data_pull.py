@@ -4,8 +4,6 @@ import os
 import pandas as pd
 import geopandas as gpd
 import polars as pl
-import requests
-from tqdm import tqdm
 
 from ..sql.models import get_conn, init_dp03_table
 
