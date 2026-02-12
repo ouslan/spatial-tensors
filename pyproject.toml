@@ -6,6 +6,7 @@ readme = "README.md"
 authors = [{ name = "Alejandro Ouslan", email = "alejandro.ouslan@upr.edu" }]
 requires-python = ">=3.12"
 dependencies = [
+    "pandas>=3.0.0",
     "polars>=1.38.1",
 ]
 
@@ -17,4 +18,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["jupyter>=1.1.1", "polars>=1.38.1"]
+dev = [
+    "jupyter>=1.1.1",
+    "polars>=1.38.1",
+    "pre-commit>=4.5.1",
+]
