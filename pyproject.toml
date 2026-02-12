@@ -1,32 +1,18 @@
 [project]
-name = "spatial-tensors"
+name = "spatial_tensors_replications"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
+authors = [{ name = "Alejandro Ouslan", email = "alejandro.ouslan@upr.edu" }]
 requires-python = ">=3.12"
-dependencies = [
-    "aesara>=2.9.3",
-    "altair[all]>=5.5.0",
-    "arviz[all]>=0.21.0",
-    "bambi>=0.15.0",
-    "duckdb>=1.4.1",
-    "geopandas>=1.0.1",
-    "libpysal>=4.13.0",
-    "linearmodels>=7.0",
-    "matplotlib>=3.10.1",
-    "numpy>=2.2.5",
-    "pandas>=2.2.3",
-    "polars>=1.29.0",
-    "pygam>=0.10.1",
-    "pysal>=25.1",
-    "requests>=2.32.3",
-    "spreg>=1.8.2",
-]
+dependencies = []
+
+[project.scripts]
+spatial-tensors = "spatial_tensors_replications:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = [
-    "jupyter>=1.1.1",
-    "jupytext>=1.17.3",
-    "pre-commit>=4.2.0",
-    "pynvim>=0.5.2",
-]
+dev = ["jupyter>=1.1.1", "polars>=1.38.1"]

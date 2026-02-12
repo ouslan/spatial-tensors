@@ -7,3 +7,9 @@ repos:
         stages: [pre-commit]
         language: system
         entry: jupyter nbconvert --ClearOutputPreprocessor.enabled=True --inplace
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.10.2 # uv version
+    hooks:
+      - id: uv-lock
+      - id: pip-compile
+        args: [pyproject.toml, --no-deps, --all-extras, --output-file=requirements.txt]
