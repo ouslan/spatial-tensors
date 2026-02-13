@@ -4,8 +4,7 @@ import os
 import pandas as pd
 import geopandas as gpd
 import polars as pl
-
-from ..sql.models import get_conn, init_dp03_table
+from CensusForge import CensusAPI
 
 
 class DataPull:
@@ -69,17 +68,13 @@ class DataPull:
         return df.rename(names).with_columns(year=pl.lit(year))
 
     def pull_dp03(self) -> pl.DataFrame:
-        if "DP03Table" not in self.conn.sql("SHOW TABLES;").df().get("name").tolist():
-            init_dp03_table(self.data_file)
+
         for _year in range(2011, 2024):
-            if (
-                self.conn.sql(f"SELECT * FROM 'DP03Table' WHERE year={_year}")
-                .df()
-                .empty
-            ):
-                logging.info(f"pulling {_year} data")
-                tmp = self.pull_query(
-                    params=[
+            logging.info(f"pulling {_year} data")
+            data = CensusAPI().query(
+                    dataset="acs-acs5-profile",
+                    year=_year,
+                    params_list=[
                         "DP03_0001E",
                         "DP03_0008E",
                         "DP03_0009E",
@@ -101,9 +96,10 @@ class DataPull:
                         "DP03_0070E",
                         "DP03_0074E",
                     ],
-                    year=_year,
+                    geography="zip code tabulation area"
                 )
-                tmp = tmp.rename(
+            df = pl.DataFrame(data)
+            df = df.rename(
                     {
                         "dp03_0001e": "total_population",
                         "dp03_0008e": "in_labor_force",
@@ -125,11 +121,11 @@ class DataPull:
                         "dp03_0061e": "inc_more_200k",
                         "dp03_0070e": "with_social_security",
                         "dp03_0074e": "food_stamp",
+                        "zip code tabulation area": "zipcode"
                     }
                 )
-                tmp = tmp.rename({"zip code tabulation area": "zipcode"})
-                self.conn.sql("INSERT INTO 'DP03Table' BY NAME SELECT * FROM tmp")
-                logging.info(f"succesfully inserting {_year}")
+            df = df.rename({"zip code tabulation area": "zipcode"})
+            logging.info(f"succesfully inserting {_year}")
                 # except:
                 #     logging.warning(f"The ACS for {_year} is not availabe")
                 #     continue
