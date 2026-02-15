@@ -1,11 +1,13 @@
 import logging
-from pathlib import Path
 import os
+from pathlib import Path
 
-import pandas as pd
+import duckdb
 import geopandas as gpd
+import pandas as pd
 import polars as pl
 from CensusForge import CensusAPI
+from jp_tools import download
 
 
 class DataPull:
@@ -23,14 +25,14 @@ class DataPull:
         )
         self.saving_dir = saving_dir
         self.data_file = database_file
-        self.conn = get_conn(self.data_file)
+        self.conn = duckdb.connect()
 
     def make_spatial_table(self) -> pd.DataFrame:
         # initiiate the database tables
         if "zipstable" not in self.conn.sql("SHOW TABLES;").df().get("name").tolist():
             # Download the shape files
             if not os.path.exists(f"{self.saving_dir}external/zips_shape.zip"):
-                self.pull_file(
+                download(
                     url="https://www2.census.gov/geo/tiger/TIGER2024/ZCTA520/tl_2024_us_zcta520.zip",
                     filename=f"{self.saving_dir}external/zips_shape.zip",
                 )
@@ -140,41 +142,6 @@ class DataPull:
                 )
                 df.write_parquet(file_path)
                 logging.info(f"succesfully inserting {_year}")
-        return self.conn.sql("SELECT * FROM 'DP03Table';").pl()
-
-    def pull_file(self, url: str, filename: str, verify: bool = True) -> None:
-        """
-        Pulls a file from a URL and saves it in the filename. Used by the class to pull external files.
-
-        Parameters
-        ----------
-        url: str
-            The URL to pull the file from.
-        filename: str
-            The filename to save the file to.
-        verify: bool
-            If True, verifies the SSL certificate. If False, does not verify the SSL certificate.
-
-        Returns
-        -------
-        None
-        """
-        chunk_size = 10 * 1024 * 1024
-
-        with requests.get(url, stream=True, verify=verify) as response:
-            total_size = int(response.headers.get("content-length", 0))
-
-            with tqdm(
-                total=total_size,
-                unit="B",
-                unit_scale=True,
-                unit_divisor=1024,
-                desc="Downloading",
-            ) as bar:
-                with open(filename, "wb") as file:
-                    for chunk in response.iter_content(chunk_size=chunk_size):
-                        if chunk:
-                            file.write(chunk)
-                            bar.update(
-                                len(chunk)
-                            )  # Update the progress bar with the size of the chunks
+        return self.conn.execute(
+            f"SELECT * FROM '{self.saving_dir}raw/dp03-*.parquet';"
+        ).pl()
