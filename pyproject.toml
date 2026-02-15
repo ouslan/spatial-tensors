@@ -6,12 +6,12 @@ readme = "README.md"
 authors = [{ name = "Alejandro Ouslan", email = "alejandro.ouslan@upr.edu" }]
 requires-python = ">=3.13"
 dependencies = [
-    "censusforge>=0.5.1",
-    "geopandas>=1.1.2",
-    "jp-qcew>=3.0.1",
-    "jp-tools>=0.5.7",
-    "pandas>=3.0.0",
-    "polars>=1.38.1",
+  "censusforge>=0.5.1",
+  "geopandas>=1.1.2",
+  "jp-qcew>=3.0.1",
+  "jp-tools>=0.5.7",
+  "pandas>=3.0.0",
+  "polars>=1.38.1",
 ]
 
 [project.scripts]
@@ -22,4 +22,13 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["jupyter>=1.1.1", "polars>=1.38.1", "pre-commit>=4.5.1"]
+dev = [
+  "cairosvg>=2.8.2",
+  "jupyter>=1.1.1",
+  "jupytext>=1.19.1",
+  "kaleido>=1.2.0",
+  "pnglatex>=1.1",
+  "pre-commit>=4.5.1",
+  "pynvim>=0.6.0",
+  "pyperclip>=1.11.0",
+]

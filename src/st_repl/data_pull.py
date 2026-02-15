@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 import os
 
 import pandas as pd
@@ -50,28 +51,16 @@ class DataPull:
             )
         return self.conn.sql("SELECT * FROM zipstable;").df()
 
-    def pull_query(self, params: list, year: int) -> pl.DataFrame:
-        # prepare custom census query
-        param = ",".join(params)
-        base = "https://api.census.gov/data/"
-        flow = "/acs/acs5/profile"
-        url = f"{base}{year}{flow}?get={param}&for=zip%20code%20tabulation%20area:*"
-        df = pl.DataFrame(requests.get(url).json())
-
-        # get names from DataFrame
-        names = df.select(pl.col("column_0")).transpose()
-        names = names.to_dicts().pop()
-        names = dict((k, v.lower()) for k, v in names.items())
-
-        # Pivot table
-        df = df.drop("column_0").transpose()
-        return df.rename(names).with_columns(year=pl.lit(year))
-
     def pull_dp03(self) -> pl.DataFrame:
 
         for _year in range(2011, 2024):
-            logging.info(f"pulling {_year} data")
-            data = CensusAPI().query(
+            file_path = Path(f"{self.saving_dir}raw/dp03-{_year}.parquet")
+
+            if file_path.exists():
+                continue
+            else:
+                logging.info(f"pulling {_year} data")
+                data = CensusAPI().query(
                     dataset="acs-acs5-profile",
                     year=_year,
                     params_list=[
@@ -96,10 +85,10 @@ class DataPull:
                         "DP03_0070E",
                         "DP03_0074E",
                     ],
-                    geography="zip code tabulation area"
+                    geography="zip code tabulation area",
                 )
-            df = pl.DataFrame(data)
-            df = df.rename(
+                df = pl.DataFrame(data)
+                df = df.rename(
                     {
                         "dp03_0001e": "total_population",
                         "dp03_0008e": "in_labor_force",
@@ -121,17 +110,36 @@ class DataPull:
                         "dp03_0061e": "inc_more_200k",
                         "dp03_0070e": "with_social_security",
                         "dp03_0074e": "food_stamp",
-                        "zip code tabulation area": "zipcode"
+                        "zip code tabulation area": "zipcode",
                     }
                 )
-            df = df.rename({"zip code tabulation area": "zipcode"})
-            logging.info(f"succesfully inserting {_year}")
-                # except:
-                #     logging.warning(f"The ACS for {_year} is not availabe")
-                #     continue
-            else:
-                logging.info(f"data for {_year} is in the database")
-                continue
+                df = df.cast(
+                    {
+                        "total_population": pl.Int32,
+                        "in_labor_force": pl.Int32,
+                        "unemployment": pl.Int32,
+                        "own_children6": pl.Int32,
+                        "own_children17": pl.Int32,
+                        "commute_car": pl.Int32,
+                        "commute_time": pl.Float32,
+                        "total_house": pl.Int32,
+                        "inc_less_10k": pl.Int32,
+                        "inc_10k_15k": pl.Int32,
+                        "inc_15k_25k": pl.Int32,
+                        "inc_25k_35k": pl.Int32,
+                        "inc_35k_50k": pl.Int32,
+                        "inc_50k_75k": pl.Int32,
+                        "inc_75k_100k": pl.Int32,
+                        "inc_100k_150k": pl.Int32,
+                        "inc_150k_200k": pl.Int32,
+                        "inc_more_200k": pl.Int32,
+                        "with_social_security": pl.Int32,
+                        "food_stamp": pl.Int32,
+                        "zipcode": pl.String,
+                    }
+                )
+                df.write_parquet(file_path)
+                logging.info(f"succesfully inserting {_year}")
         return self.conn.sql("SELECT * FROM 'DP03Table';").pl()
 
     def pull_file(self, url: str, filename: str, verify: bool = True) -> None:
