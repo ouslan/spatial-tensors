@@ -90,28 +90,31 @@ class DataPull:
                     geography="zip code tabulation area",
                 )
                 df = pl.DataFrame(data)
+                headers = [str(col) for col in df.row(0)]
+
+                df = df.slice(1).rename(dict(zip(df.columns, headers)))
                 df = df.rename(
                     {
-                        "dp03_0001e": "total_population",
-                        "dp03_0008e": "in_labor_force",
-                        "dp03_0009e": "unemployment",
-                        "dp03_0014e": "own_children6",
-                        "dp03_0016e": "own_children17",
-                        "dp03_0019e": "commute_car",
-                        "dp03_0025e": "commute_time",
-                        "dp03_0051e": "total_house",
-                        "dp03_0052e": "inc_less_10k",
-                        "dp03_0053e": "inc_10k_15k",
-                        "dp03_0054e": "inc_15k_25k",
-                        "dp03_0055e": "inc_25k_35k",
-                        "dp03_0056e": "inc_35k_50k",
-                        "dp03_0057e": "inc_50k_75k",
-                        "dp03_0058e": "inc_75k_100k",
-                        "dp03_0059e": "inc_100k_150k",
-                        "dp03_0060e": "inc_150k_200k",
-                        "dp03_0061e": "inc_more_200k",
-                        "dp03_0070e": "with_social_security",
-                        "dp03_0074e": "food_stamp",
+                        "DP03_0001E": "total_population",
+                        "DP03_0008E": "in_labor_force",
+                        "DP03_0009E": "unemployment",
+                        "DP03_0014E": "own_children6",
+                        "DP03_0016E": "own_children17",
+                        "DP03_0019E": "commute_car",
+                        "DP03_0025E": "commute_time",
+                        "DP03_0051E": "total_house",
+                        "DP03_0052E": "inc_less_10k",
+                        "DP03_0053E": "inc_10k_15k",
+                        "DP03_0054E": "inc_15k_25k",
+                        "DP03_0055E": "inc_25k_35k",
+                        "DP03_0056E": "inc_35k_50k",
+                        "DP03_0057E": "inc_50k_75k",
+                        "DP03_0058E": "inc_75k_100k",
+                        "DP03_0059E": "inc_100k_150k",
+                        "DP03_0060E": "inc_150k_200k",
+                        "DP03_0061E": "inc_more_200k",
+                        "DP03_0070E": "with_social_security",
+                        "DP03_0074E": "food_stamp",
                         "zip code tabulation area": "zipcode",
                     }
                 )

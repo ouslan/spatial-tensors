@@ -1,2 +1,1 @@
-def main() -> None:
-    print("Hello from spatial-tensors!")
+from .data_pull import DataPull
