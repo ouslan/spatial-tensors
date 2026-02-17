@@ -45,13 +45,21 @@
 
 \newpage
 
+\tableofcontents
+
+\newpage
+
 \begin{abstract}
 	This research aims to compare the performance of spatial regression models that rely on predefined
-	weight matrices with that of semi-parametric regression models using spatial smoothers.
+	weight matrices with that of semi-parametric regression models using spatial smoothers. Through the
+	use of simulations it was found that utilising spatial smoother produced better estimators compared
+	to misspecified spatial relationships. This approach is useful in context where the presence of a
+	spatial relationships exists but are not clear or too complex. An applications of this is using
+	a Cobb-Douglas models for estimating the elasticity of labor and capital for Puerto Rico
 \end{abstract}
 
 \section{Proposal Keywords}
-Spatial simulation, Spatial Regressions, GAMs, Tensor Products
+Spatial simulation, Spatial Regressions, GAMs, Tensor Products, Cobb-Douglas,
 
 \section{Introduction}
 
@@ -67,8 +75,10 @@ More specifically in this research we seek to find reasonable strategies to best
 where are it can be reasonably be presumed that there is some spatial effect but there is no clear answer
 on how spatial agents relate to each other.
 
+\section{Literary Review}
 
-\section{Background and Motivation}
+
+\section{Methodology}
 
 Starting with out, economic theory tells that you can model the productivity of a given economy as a function
 of labor $(L)$ and capital $(K)$ this can be model in the following equation.
@@ -193,20 +203,18 @@ Where:
 	\item $\log(K)_{it} \equiv k_{it}$
 \end{enumerate}
 
-Contextualizing the pannel form of the Cobb-Douglas tell us that you can deconstroc
+Contextualizing the panel form of the Cobb-Douglas tell us that you can deconstruct
 a given economy into smaller sub economies that share the same elasticities for their labor
-and capital but differ in their quantities of capital and labor. Using the notation form the previos section we can add the spatial componant to the Cobb-Douglas function and returning as the orinal function is as follwos:
+and capital but differ in their quantities of capital and labor. Using the notation form the previos section we can add the spatial component to the Cobb-Douglas function and returning as the orinal function is as follows:
 \[
 	\begin{split}
 		y_{it}       & = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \rho \sum_{j=1}^N w_{ij} y_{jt} + \epsilon_{it} \\
 		\log(Y_{it}) & = \log(A_{it}) + \alpha \log(K_{it}) + \beta \log(L_{it}) + \rho \sum_{j=1}^N w_{ij} \log(Y_{jt})   \\
-		Y_{it}       & = A_{it} K^\alpha_{it} L^\beta_{it} \exp \left\{ \rho \sum_{j=1}^N w_{ij} \log(Y_{jt}) \right\}     \\
-		Y_{it}       & = A_{it} K^\alpha_{it} L^\beta_{it} e^{\rho \sum_{j=1}^N w_{ij} \log(Y_{jt})}
 	\end{split}
 \]
 
 \begin{equation}
-	Y_{it} = A_{it} K^\alpha_{it} L^\beta_{it} \prod_{j=1}^N Y_{it}^{\rho w_{ij}}
+	\log(Y_{it}) = \log(A_{it}) + \alpha \log(K_{it}) + \beta \log(L_{it}) + \rho \sum_{j=1}^N w_{ij} \log(Y_{jt})
 \end{equation}
 
 Introducing space in this way it tell how this smaller economies are affected by the
@@ -215,7 +223,8 @@ there is no universally accepted relationship $W$ and it is possible that depend
 economy looked at this $W$ might be compleatly different and more complex that would be virtually
 imposible to pick an appropriate $W$ for the model.
 
-\section{Aims and Objectives}
+
+\subsection{Model Comparison}
 
 The primary objective of this research is to examine and compare the performance
 of the Spatial Autoregressive Model (SAR) of the Cobb-Douglas with that of a semi-parametric regression model
@@ -226,9 +235,7 @@ trade-offs between the two approaches, including ease of implementation,
 underlying assumptions, computational cost, and interpretability.
 
 
-\section{Research Plan and Methodology}
 
-\subsection{Model Comparison}
 
 We begin with the classical Ordinary Least Squares (OLS) regression model,
 specified as
@@ -370,11 +377,7 @@ surface.
 Incorporating a tensor-product spatial smoother into the Cobb--Douglas production
 function yields the following specification:
 \begin{equation}
-	Y_{it}
-	=
-	K_{it}^{\alpha}
-	L_{it}^{\beta}
-	\exp\{ f(\text{lat}_i, \text{lon}_i) + \gamma_t + \epsilon_{it} \},
+	\log(Y_{it}) = \log(A_{it}) + \alpha \log(K_{it}) + \beta \log(L_{it}) + f(C_i)   \\
 	\label{eq:Cobb tensor}
 \end{equation}
 
@@ -386,99 +389,21 @@ effects nonparametrically, this approach avoids the need to specify a spatial we
 matrix and aims to produce more reliable and robust parameter estimates in the presence
 of unknown or complex spatial dependence.
 
-\section{Success and Impact}
+\section{Simulation}
 
-SDM models are highly sensitive to the choice of $W$, for which no standardized selection method exists. Often, domain expertise is required. The semi-parametric model, however, does not depend on $W$, making it potentially more robust.
+\subsection{Generations}
 
-We will evaluate model performance using mean squared error (MSE) of predicted outcomes:
+\subsection{Estimations inference}
 
-\begin{equation}
-	\frac{\sum_{n=1}^N(y_n-\hat{y}_{nSDM})^2}{N}; \quad \frac{\sum_{n=1}^N(y-\hat{y}_{GAM})^2}{N}
-	\label{eq:pref}
-\end{equation}
+\subsection{Simulation Results}
 
-And by comparing estimated vs. true coefficients:
+\section{Application}
+\subsection{Descriptive Statistics}
+\subsection{Results}
 
-\begin{equation}
-	\frac{\sum_{n=1}^N(\beta-\hat{\beta}_{SDM})^2}{N}; \quad \frac{\sum_{n=1}^N(\beta-\hat{\beta}_{GAM})^2}{N}
-	\label{eq:pref2}
-\end{equation}
+\section{Conclusions}
 
-\section{Preliminary results}
 
-In the following results are for a regar regression model specified in the following way:
-
-We consider a set of $N$ observations generated from a spatial regression
-framework.  Let $y$ denote the response vector, $X = (X_1, X_2, X_3)$ the
-explanatory variables, and $W$ a spatial weights matrix (Rook, Queen, or
-$k$-nearest neighbors with $k=6$).  The spatial Durbin model (SDM) used in the
-simulation study is given by
-\begin{equation}
-	y = \rho Wy + X\beta + \varepsilon,
-	\label{eq:sdm}
-\end{equation}
-where $\rho$ is the spatial autoregressive parameter, $\beta$ are the direct effects
-
-The error term follows
-\[
-	\varepsilon \sim \mathcal{N}(0, \sigma^2 I_N).
-\]
-
-The true parameter values in the data-generating process are
-\[
-	\beta = (4,5,6,7)^{\top}, \qquad \rho = 0.7.
-\]
-
-Looking over the results we see that the best preforming model is the Queens
-model as this is the model used to generate the data. The second best preforming
-model is the penalized tensor products. This shows that if there is no reasonable
-argument for picking the spatial weights matrix the penalized tensor products are a
-reasonable starting point for controlling for spatial variability.
-
-\begin{table}[H]
-	\centering
-	\caption{Simulation results for 1000 runs comparing spatial specifications}
-	\begin{tabular}{lcccccc}
-		\hline
-		 & \textbf{Rook} & \textbf{Queen} & \textbf{KNN (6)} & \textbf{Tensor} & \textbf{Base} \\
-		\hline
-		Intercept
-		 & 3973.28
-		 & 0.40
-		 & 92.49
-		 & 8252.62
-		 & 7177.34                                                                             \\
-
-		$X_1$
-		 & 0.74
-		 & 0.0032
-		 & 0.30
-		 & 0.21
-		 & 1.22                                                                                \\
-
-		$X_2$
-		 & 0.90
-		 & 0.0032
-		 & 0.30
-		 & 0.26
-		 & 1.57                                                                                \\
-
-		$X_3$
-		 & 1.04
-		 & 0.0031
-		 & 0.39
-		 & 0.27
-		 & 1.92                                                                                \\
-
-		$\rho$
-		 & 0.43
-		 & 0.000024
-		 & 0.0060
-		 & --
-		 & --                                                                                  \\
-		\hline
-	\end{tabular}
-\end{table}
 
 \newpage
 

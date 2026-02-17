@@ -1,0 +1,17 @@
+\contentsline {section}{\numberline {1}Proposal Keywords}{2}{section.1}%
+\contentsline {section}{\numberline {2}Introduction}{2}{section.2}%
+\contentsline {section}{\numberline {3}Literary Review}{2}{section.3}%
+\contentsline {section}{\numberline {4}Methodology}{2}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Spatial Modeling}{3}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}spatial Cobb-Douglas}{4}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Model Comparison}{5}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Spatial Smoother}{6}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Cobb--Douglas Interpretation}{7}{subsection.4.5}%
+\contentsline {section}{\numberline {5}Simulation}{7}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Generations}{7}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Estimations inference}{7}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Simulation Results}{7}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Application}{7}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Descriptive Statistics}{7}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Results}{7}{subsection.6.2}%
+\contentsline {section}{\numberline {7}Conclusions}{7}{section.7}%
