@@ -1,6 +1,6 @@
 import logging
-import os
 from pathlib import Path
+import tempfile
 
 import duckdb
 import geopandas as gpd
@@ -27,31 +27,25 @@ class DataPull:
         self.data_file = database_file
         self.conn = duckdb.connect()
 
-    def make_spatial_table(self) -> pd.DataFrame:
-        # initiiate the database tables
-        if "zipstable" not in self.conn.sql("SHOW TABLES;").df().get("name").tolist():
-            # Download the shape files
-            if not os.path.exists(f"{self.saving_dir}external/zips_shape.zip"):
-                download(
-                    url="https://www2.census.gov/geo/tiger/TIGER2024/ZCTA520/tl_2024_us_zcta520.zip",
-                    filename=f"{self.saving_dir}external/zips_shape.zip",
-                )
-                logging.info("Downloaded zipcode shape files")
+    def zips_goem(self) -> pd.DataFrame:
+        file_path = Path(f"{self.saving_dir}external/geo-zips.parquet")
+        if not file_path.exists():
+            download(
+                url="https://www2.census.gov/geo/tiger/TIGER2024/ZCTA520/tl_2024_us_zcta520.zip",
+                filename=f"{tempfile.gettempdir()}/{hash(file_path)}.zip",
+            )
 
             # Process and insert the shape files
-            gdf = gpd.read_file(f"{self.saving_dir}external/zips_shape.zip")
-            gdf = gdf[gdf["ZCTA5CE20"].str.startswith("00")]
-            gdf = gdf.rename(columns={"ZCTA5CE20": "zipcode"}).reset_index()
+            gdf = gpd.read_file(f"{tempfile.gettempdir()}/{hash(file_path)}.zip")
+            gdf = gdf.rename(columns={"ZCTA5CE20": "zipcode"})
+            gdf = gdf[gdf["zipcode"].str.startswith("00")].reset_index()
             gdf = gdf[["zipcode", "geometry"]]
             gdf["zipcode"] = gdf["zipcode"].str.strip()
-            df = gdf.drop(columns="geometry")
-            geometry = gdf["geometry"].apply(lambda geom: geom.wkt)
-            df["geometry"] = geometry
-            self.conn.execute("CREATE TABLE zipstable AS SELECT * FROM df")
+            gdf.to_parquet(file_path)
             logging.info(
                 f"The zipstable is empty inserting {self.saving_dir}external/cousub.zip"
             )
-        return self.conn.sql("SELECT * FROM zipstable;").df()
+        return gpd.read_parquet(path=file_path)
 
     def pull_dp03(self) -> pl.DataFrame:
 
