@@ -69,6 +69,22 @@ class DataPull:
             )
         return gpd.read_parquet(path=file_path)
 
+    def pull_abscs(self) -> pl.DataFrame:
+        for _year in range(2011, 2024):
+            file_path = Path(f"{self.saving_dir}raw/abscs-{_year}.parquet")
+
+            if file_path.exists():
+                continue
+            else:
+
+                logging.info(f"pulling {_year} data")
+                data = CensusAPI().query(
+                    dataset="acs-acs5-profile",
+                    year=_year,
+                    params_list=[],
+                    geography="zip code tabulation area",
+                )
+
     def pull_dp03(self) -> pl.DataFrame:
 
         for _year in range(2011, 2024):
