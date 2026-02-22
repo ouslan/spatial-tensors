@@ -561,7 +561,7 @@ class SpatialReg(DataPull):
         )
         df_qcew = df_qcew.with_columns(pl.col("phys_addr_city").str.to_lowercase())
         df_qcew = df_qcew.group_by(["year", "qtr", "phys_addr_city"]).agg(
-            pl.col("total_employment").sum()
+            pl.col("total_employment").sum(), pl.col("total_wages").sum()
         )
         df_qcew = df_qcew.rename({"phys_addr_city": "name"})
         df_qcew = df_qcew.to_pandas()
