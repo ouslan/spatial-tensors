@@ -386,6 +386,24 @@ effects nonparametrically, this approach avoids the need to specify a spatial we
 matrix and aims to produce more reliable and robust parameter estimates in the presence
 of unknown or complex spatial dependence.
 
+\subsection{Data Sources and Variable Specification}
+
+To apply the proposed models to the Puerto Rican economy, we utilize high-frequency sub-national data. Given the lack of official municipal-level GDP reports in real-time, the following proxies and data sources are employed:
+
+\begin{itemize}
+	\item \textbf{Output ($Y$):} Following established econometric literature that uses electricity consumption as a high-correlation proxy for economic activity, we utilize municipal energy consumption data provided by \textbf{LUMA Energy}. This allows for a more granular temporal analysis than traditional annual proxies.
+
+	\item \textbf{Capital ($K$):} Physical capital stocks are derived from the \textbf{Centro de Recaudación de Ingresos Municipales (CRIM)}. Specifically, data is extracted from the \textit{Personal Property Tax Return (Planilla de Contribución sobre la Propiedad Mueble AS-29.1)}. Key indicators include:
+	      \begin{itemize}
+		      \item \textbf{Current Assets:} Inventory, materials, and supplies (Encasillado C).
+		      \item \textbf{Fixed Assets:} Machinery, equipment, and leasehold improvements.
+	      \end{itemize}
+
+	\item \textbf{Labor ($L$):} Labor input is measured using employment and wage data from the \textbf{Quarterly Census of Employment and Wages (QCEW)}. This dataset provides a comprehensive count of establishments, employment, and wages for workers covered by State unemployment insurance laws, categorized by North American Industry Classification System (NAICS) codes.
+\end{itemize}
+
+The integration of these datasets provides a panel structure desegregated by municipality ($i$) and time ($t$), which is essential for the spatial and semi-parametric models described in Equations \ref{eq:SAR} and \ref{eq:tensor}.
+
 \section{Success and Impact}
 
 SDM models are highly sensitive to the choice of $W$, for which no standardized selection method exists. Often, domain expertise is required. The semi-parametric model, however, does not depend on $W$, making it potentially more robust.

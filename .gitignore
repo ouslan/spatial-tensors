@@ -173,4 +173,5 @@ docs/papers/*.pdf
 *.ddb
 *.zip
 *.json
+*.parquet
 
