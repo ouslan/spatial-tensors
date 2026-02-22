@@ -512,7 +512,7 @@ class SpatialReg(DataPull):
         return spatial_lag
 
     def quasi_data(self) -> gpd.GeoDataFrame:
-        data_path = Path(f"{self.saving_dir}processed/pr-qcew-2024-2.parques")
+        data_path = Path(f"{self.saving_dir}processed/pr-qcew-2024-2.parquet")
         if not data_path.exists():
             CleanQCEW(self.saving_dir).make_qcew_dataset()
 
