@@ -1,16 +1,15 @@
 import logging
-import arviz as az
+
 import geopandas as gpd
 import numpy as np
 import pandas as pd
 import polars as pl
-from pysal.lib import weights
-from shapely import wkt
-from spreg import dgp_lag
-import statsmodels.api as sm
-from sklearn.linear_model import Ridge
-from patsy import dmatrix
 import pymc as pm
+import statsmodels.api as sm
+from libpysal import weights
+from patsy import dmatrix
+from sklearn.linear_model import Ridge
+from spreg import dgp_lag
 
 from .data_pull import DataPull
 
@@ -19,22 +18,21 @@ class SpatialReg(DataPull):
     def __init__(
         self,
         saving_dir: str = "data/",
-        database_file: str = "data.ddb",
         log_file: str = "data_process.log",
     ):
-        super().__init__(saving_dir, database_file, log_file)
+        super().__init__(saving_dir, log_file)
 
         # Define the spatial weight matrix
         self.wr = weights.contiguity.Rook.from_dataframe(
-            self.spatial_df(), use_index=False
+            self.zips_goem(), use_index=False
         )
 
         self.wq = weights.contiguity.Queen.from_dataframe(
-            self.spatial_df(), use_index=False
+            self.zips_goem(), use_index=False
         )
         self.wq.transform = "r"
 
-        self.wk6 = weights.KNN.from_dataframe(self.spatial_df(), k=6, use_index=False)
+        self.wk6 = weights.KNN.from_dataframe(self.zips_goem(), k=6, use_index=False)
         self.wk6.transform = "r"
 
     def spatial_data(
@@ -500,14 +498,6 @@ class SpatialReg(DataPull):
         y_true = data["y_true"].values.reshape(-1, 1)
         X = sm.add_constant(xb)
         return sm.OLS(y_true, X).fit()
-
-    def spatial_df(self) -> gpd.GeoDataFrame:
-        gdf = gpd.GeoDataFrame(self.make_spatial_table())
-        gdf["geometry"] = gdf["geometry"].apply(wkt.loads)
-        gdf = gdf.set_geometry("geometry").set_crs("EPSG:4269", allow_override=True)
-        gdf = gdf.to_crs("EPSG:3395")
-        gdf["zipcode"] = gdf["zipcode"].astype(str)
-        return gdf
 
     def calculate_spatial_lag(self, df, w, column):
         # Reshape y to match the number of rows in the dataframe
