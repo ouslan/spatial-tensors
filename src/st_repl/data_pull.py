@@ -27,7 +27,29 @@ class DataPull:
         self.data_file = database_file
         self.conn = duckdb.connect()
 
-    def zips_goem(self) -> pd.DataFrame:
+    def county_geom(self) -> gpd.GeoDataFrame:
+        file_path = Path(f"{self.saving_dir}external/geo-county.parquet")
+        if not file_path.exists():
+            download(
+                url="https://www2.census.gov/geo/tiger/TIGER2025/COUNTY/tl_2025_us_county.zip",
+                filename=f"{tempfile.gettempdir()}/{hash(file_path)}.zip",
+            )
+
+            # Process shape
+            gdf = gpd.read_file(f"{tempfile.gettempdir()}/{hash(file_path)}.zip")
+            gdf = gdf.rename(
+                columns={
+                    "STATEFP": "statefip",
+                    "GEOID": "geoid",
+                    "NAME": "name",
+                }
+            )
+            gdf = gdf[gdf["statefip"] == "72"].reset_index()
+            gdf = gdf[["statefip", "geoid", "name", "geometry"]]
+            gdf.to_parquet(file_path)
+        return gpd.read_parquet(path=file_path)
+
+    def zips_goem(self) -> gpd.GeoDataFrame:
         file_path = Path(f"{self.saving_dir}external/geo-zips.parquet")
         if not file_path.exists():
             download(
