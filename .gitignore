@@ -174,4 +174,4 @@ docs/papers/*.pdf
 *.zip
 *.json
 *.parquet
-
+qcew/
