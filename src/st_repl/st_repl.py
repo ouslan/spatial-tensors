@@ -1,8 +1,11 @@
 import logging
+from pathlib import Path
 
 import geopandas as gpd
 import numpy as np
+from jp_qcew import CleanQCEW
 import pandas as pd
+import string
 import polars as pl
 import pymc as pm
 import statsmodels.api as sm
@@ -507,3 +510,73 @@ class SpatialReg(DataPull):
         spatial_lag = weights.lag_spatial(w, y)
 
         return spatial_lag
+
+    def quasi_data(self) -> gpd.GeoDataFrame:
+        data_path = Path(f"{self.saving_dir}processed/pr-qcew-2024-2.parques")
+        if not data_path.exists():
+            CleanQCEW(self.saving_dir).make_qcew_dataset()
+
+        df_qcew = self.conn.execute(f"""
+                    SELECT
+                        year,
+                        qtr,
+                        phys_addr_5_zip,
+                        phys_addr_city,
+                        ui_addr_5_zip,
+                        mail_addr_5_zip,
+                        ein,
+                        first_month_employment,
+                        total_wages,
+                        second_month_employment,
+                        third_month_employment,
+                        naics_code
+                    FROM '{self.saving_dir}processed/pr-qcew-*.parquet';
+                    """).pl()
+        df_qcew = df_qcew.with_columns(
+            first_month_employment=pl.col("first_month_employment").fill_null(
+                strategy="zero"
+            ),
+            second_month_employment=pl.col("second_month_employment").fill_null(
+                strategy="zero"
+            ),
+            third_month_employment=pl.col("third_month_employment").fill_null(
+                strategy="zero"
+            ),
+            total_wages=pl.col("total_wages").fill_null(strategy="zero"),
+        )
+        df_qcew = df_qcew.with_columns(
+            total_employment=(
+                pl.col("first_month_employment")
+                + pl.col("second_month_employment")
+                + pl.col("third_month_employment")
+            )
+            / 3
+        )
+        df_qcew = df_qcew.filter(
+            (pl.col("total_employment") != 0) & (pl.col("total_wages") != 0)
+        )
+
+        df_qcew = df_qcew.filter(
+            (pl.col("phys_addr_city") != "") & (pl.col("naics_code") != "")
+        )
+        df_qcew = df_qcew.with_columns(pl.col("phys_addr_city").str.to_lowercase())
+        df_qcew = df_qcew.group_by(["year", "qtr", "phys_addr_city"]).agg(
+            pl.col("total_employment").sum()
+        )
+        df_qcew = df_qcew.rename({"phys_addr_city": "name"})
+        df_qcew = df_qcew.to_pandas()
+
+        gdf = self.county_geom()
+
+        # Create a translation table to remove accents
+
+        accented_vowels = "áéíóúüñÁÉÍÓÚ"
+        unaccented_vowels = "aeiouunAEIOU"
+
+        gdf["name"] = (
+            gdf["name"]
+            .str.lower()
+            .str.translate(str.maketrans(accented_vowels, unaccented_vowels))
+        )
+
+        return gpd.GeoDataFrame(pd.merge(gdf, df_qcew, on="name"), geometry="geometry")
