@@ -42,60 +42,42 @@ class SpatialReg(DataPull):
     ) -> gpd.GeoDataFrame:
 
         gdf = self.quasi_data().sort_values(["year", "qtr", "name"]).to_crs("EPSG:3395")
-        master = gpd.GeoDataFrame(
-            columns=[
-                "index",
-                "statefip",
-                "geoid",
-                "name",
-                "geometry",
-                "year",
-                "qtr",
-                "total_employment",
-                "total_wages",
-                "y_true",
-                "centroid",
-                "lat",
-                "lon",
-                "w_rook",
-                "w_queen",
-                "w_knn6",
-            ]
-        )
+
+        all_slices = []
+
         for year in range(2002, 2023):
             for qtr in range(1, 5):
 
                 rng_global = np.random.default_rng(seed=seed + (year * 10 + qtr))
-                # Number of observations
 
-                slice_df = gdf[
-                    (gdf["year"] == year) & (gdf["qtr"] == qtr)
-                ].reset_index()
-                X = slice_df[["total_employment", "total_wages"]].values.reshape(-1, 2)
+                slice_df = gdf[(gdf["year"] == year) & (gdf["qtr"] == qtr)].reset_index(
+                    drop=True
+                )
+
+                X = slice_df[["total_employment", "total_wages"]].values
                 X = sm.add_constant(X)
 
                 n_obs = len(slice_df)
 
-                # Define Beta coefficients
                 coef = np.array([200, alpha, beta])
-
-                # Compute XB matrix
-                xb = X @ coef
-                xb = xb.reshape(-1, 1)
+                xb = (X @ coef).reshape(-1, 1)
 
                 u = rng_global.normal(loc=0, scale=sigma, size=n_obs).reshape(-1, 1)
 
-                # calculate the spatial lag
                 y_true = dgp_lag(u, xb, self.wq, rho=rho, imethod="true_inv")
 
                 slice_df["y_true"] = y_true
-                slice_df["centroid"] = slice_df.centroid
-                slice_df["lat"] = slice_df["centroid"].x
-                slice_df["lon"] = slice_df["centroid"].y
+                slice_df["centroid"] = slice_df.geometry.centroid
+                slice_df["lat"] = slice_df["centroid"].y
+                slice_df["lon"] = slice_df["centroid"].x
+
                 slice_df["w_rook"] = weights.lag_spatial(self.wr, y_true)
                 slice_df["w_queen"] = weights.lag_spatial(self.wq, y_true)
                 slice_df["w_knn6"] = weights.lag_spatial(self.wk6, y_true)
-                print(slice_df.columns)
+
+                all_slices.append(slice_df)  # ✅ append here
+
+        master = gpd.GeoDataFrame(pd.concat(all_slices, ignore_index=True), crs=gdf.crs)
 
         return master
 
