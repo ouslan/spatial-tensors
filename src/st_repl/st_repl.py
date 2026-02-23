@@ -5,7 +5,6 @@ import geopandas as gpd
 import numpy as np
 from jp_qcew import CleanQCEW
 import pandas as pd
-import string
 import polars as pl
 import pymc as pm
 import statsmodels.api as sm
@@ -27,59 +26,78 @@ class SpatialReg(DataPull):
 
         # Define the spatial weight matrix
         self.wr = weights.contiguity.Rook.from_dataframe(
-            self.zips_goem(), use_index=False
+            self.county_geom(), use_index=False
         )
 
         self.wq = weights.contiguity.Queen.from_dataframe(
-            self.zips_goem(), use_index=False
+            self.county_geom(), use_index=False
         )
         self.wq.transform = "r"
 
-        self.wk6 = weights.KNN.from_dataframe(self.zips_goem(), k=6, use_index=False)
+        self.wk6 = weights.KNN.from_dataframe(self.county_geom(), k=6, use_index=False)
         self.wk6.transform = "r"
 
     def spatial_data(
-        self, mu: int, sigma: int, rho: float, time: int, seed: int
+        self, alpha: int, beta: int, sigma: int, rho: float, seed: int
     ) -> gpd.GeoDataFrame:
-        rng_global = np.random.default_rng(seed=seed)
-        # Number of observations
-        gdf = self.spatial_df()
-        n_obs = len(gdf)
 
-        # Create the independent variables for 4 variables that com from a normal distribution X ~ N(mu, sigma)
-        X = np.ones((n_obs, 4))
+        gdf = self.quasi_data().sort_values(["year", "qtr", "name"]).to_crs("EPSG:3395")
+        master = gpd.GeoDataFrame(
+            columns=[
+                "index",
+                "statefip",
+                "geoid",
+                "name",
+                "geometry",
+                "year",
+                "qtr",
+                "total_employment",
+                "total_wages",
+                "y_true",
+                "centroid",
+                "lat",
+                "lon",
+                "w_rook",
+                "w_queen",
+                "w_knn6",
+            ]
+        )
+        for year in range(2002, 2023):
+            for qtr in range(1, 5):
 
-        for i in range(1, 4):
-            rng = np.random.default_rng(seed=seed + i)
-            X[:, i] = rng.normal(loc=mu, scale=sigma, size=n_obs)
+                rng_global = np.random.default_rng(seed=seed + (year * 10 + qtr))
+                # Number of observations
 
-        # Define Beta coefficients
-        beta = np.array([4, 5, 6, 7])
+                slice_df = gdf[
+                    (gdf["year"] == year) & (gdf["qtr"] == qtr)
+                ].reset_index()
+                X = slice_df[["total_employment", "total_wages"]].values.reshape(-1, 2)
+                X = sm.add_constant(X)
 
-        # Compute XB matrix
-        xb = X @ beta
-        xb = xb.reshape(-1, 1)
+                n_obs = len(slice_df)
 
-        u = rng_global.normal(loc=0, scale=2, size=n_obs).reshape(-1, 1)
+                # Define Beta coefficients
+                coef = np.array([200, alpha, beta])
 
-        # calculate the spatial lag
-        y_true = dgp_lag(u, xb, self.wq, rho=rho)
+                # Compute XB matrix
+                xb = X @ coef
+                xb = xb.reshape(-1, 1)
 
-        gdf["y_true"] = y_true
+                u = rng_global.normal(loc=0, scale=sigma, size=n_obs).reshape(-1, 1)
 
-        # pre calculate the spatial lag and apply them
-        gdf["X_1"] = X[:, 1]
-        gdf["X_2"] = X[:, 2]
-        gdf["X_3"] = X[:, 3]
-        gdf["centroid"] = gdf.centroid
-        gdf["lat"] = gdf["centroid"].x
-        gdf["lon"] = gdf["centroid"].y
-        gdf["w_rook"] = weights.lag_spatial(self.wr, y_true)
-        gdf["w_queen"] = weights.lag_spatial(self.wq, y_true)
-        gdf["w_knn6"] = weights.lag_spatial(self.wk6, y_true)
-        gdf["time"] = time
+                # calculate the spatial lag
+                y_true = dgp_lag(u, xb, self.wq, rho=rho, imethod="true_inv")
 
-        return gdf
+                slice_df["y_true"] = y_true
+                slice_df["centroid"] = slice_df.centroid
+                slice_df["lat"] = slice_df["centroid"].x
+                slice_df["lon"] = slice_df["centroid"].y
+                slice_df["w_rook"] = weights.lag_spatial(self.wr, y_true)
+                slice_df["w_queen"] = weights.lag_spatial(self.wq, y_true)
+                slice_df["w_knn6"] = weights.lag_spatial(self.wk6, y_true)
+                print(slice_df.columns)
+
+        return master
 
     def spatial_panel(self, time, rho, seed):
         gdf = gpd.GeoDataFrame(
