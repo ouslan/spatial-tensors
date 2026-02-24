@@ -1,0 +1,154 @@
+\documentclass[12pt]{beamer}
+
+% ****************
+% ***** INFO *****
+% ****************
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+
+\title[Modeling Spatial Dependence]{Modeling Spatial Dependence: A Simulation-Based Comparison of Parametric and Semi-Parametric Approaches}
+\subtitle{Master in Statistics Mathematics}
+\author[Alejandro M. Ouslan]{Alejandro M. Ouslan}
+\institute[UPR Mayagüez]{University of Puerto Rico, Mayagüez}
+\date{\today}
+
+% *******************
+% ***** PROJECT *****
+% *******************
+\definecolor{main}{HTML}{000000}
+\setbeamercolor{structure}{fg=main}
+
+% *****************
+% ***** THEME *****
+% *****************
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\setbeamertemplate{frametitle continuation}{\gdef\beamer@frametitle{}}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{navigation symbols}{}
+
+% ********************
+% ***** DOCUMENT *****
+% ********************
+\begin{document}
+
+% --- Title Page ---
+\begin{frame}{}
+	\vspace{\fill}
+	\centering
+	% \includegraphics[width=0.16\linewidth]{UPR.png} % Uncomment if file exists
+
+	\vspace{\fill}
+	\Large \color{main} \textbf{\inserttitle}
+
+	\medskip
+	\large \color{black} \insertsubtitle
+
+	\vspace{\fill}
+	\footnotesize \insertinstitute
+
+	\vspace{\fill}
+	\textbf{Author:} \insertauthor \\
+	\textbf{Supervisors:} Dr. Macchiavelli, Dra. Santana, Dr. Hernandez, Dr. Rivera Santiago
+
+	\medskip
+	\insertdate
+	\vspace{\fill}
+\end{frame}
+
+% --- Introduction ---
+\begin{frame}{Introduction}
+	\begin{itemize}
+		\item \textbf{Economic Modeling:} Often assumes i.i.d. errors, but spatial proximity creates dependencies.
+		\item \textbf{The $W$ Problem:} Spatial Durbin Models (SDM) require a Weight Matrix ($W$), but choosing between Rook, Queen, or KNN is often arbitrary.
+		\item \textbf{Research Aim:} Compare the performance of predefined $W$ matrices against semi-parametric spatial smoothers (GAMs).
+	\end{itemize}
+\end{frame}
+
+% --- Spatial Weight Matrices ---
+\begin{frame}{Defining Space: Weight Matrices}
+
+	\begin{columns}
+		\begin{column}{0.5\textwidth}
+			\textbf{Contiguity Types:}
+			\begin{itemize}
+				\item \textbf{Rook:} Shared boundaries.
+				\item \textbf{Queen:} Boundaries + vertices.
+				\item \textbf{KNN:} K-Nearest Neighbors based on distance.
+			\end{itemize}
+		\end{column}
+		\begin{column}{0.5\textwidth}
+			\footnotesize
+			\[ W_{Rook} = \begin{bmatrix} 0 & 1 & 0 \\ 1 & 0 & 1 \\ 0 & 1 & 0 \end{bmatrix} \]
+		\end{column}
+	\end{columns}
+\end{frame}
+
+% --- Mathematical Framework ---
+\begin{frame}{Mathematical Framework}
+	\textbf{Cobb-Douglas with Spatial Lag (SAR):}
+	\begin{equation}
+		\log(Y_{it}) = \alpha + \alpha \log(K_{it}) + \beta \log(L_{it}) + \rho \sum_{j=1}^N w_{ij} \log(Y_{jt}) + \epsilon_{it}
+	\end{equation}
+
+	\vfill
+	\textbf{Semi-Parametric Specification (Tensor Product):}
+	\begin{equation}
+		\log(Y_{it}) = \alpha + \alpha \log(K_{it}) + \beta \log(L_{it}) + f(\text{lat}_i, \text{lon}_i) + \epsilon_{it}
+	\end{equation}
+	$f(\text{lat}, \text{lon})$ uses splines to capture spatial effects without needing $W$.
+\end{frame}
+
+% --- Tensor Product Visualization ---
+\begin{frame}{Semi-Parametric Spatial Smoothers}
+
+	The spatial smoother is constructed via a Kronecker product of basis functions:
+	\begin{block}{The Tensor Product}
+		\[ X_{\text{tensor}} = B \otimes D \]
+		This generates a smooth surface over the geographical domain, allowing productivity to vary across space flexibly.
+	\end{block}
+\end{frame}
+
+% --- Data Sources ---
+\begin{frame}{Data Sources for Puerto Rico}
+	\begin{description}
+		\item[Output ($Y$)] Electricity consumption (LUMA Energy) as a proxy for real-time municipal activity.
+		\item[Capital ($K$)] Asset data from CRIM (Property Tax Returns).
+		\item[Labor ($L$)] Wage and employment counts from QCEW (NAICS categorized).
+	\end{description}
+\end{frame}
+
+% --- Simulation Results ---
+\begin{frame}{Preliminary Simulation Results}
+	\begin{table}
+		\centering
+		\caption{MSE of Coefficient Estimates (1000 Runs)}
+		\scriptsize
+		\begin{tabular}{lcccc}
+			\toprule
+			\textbf{Variable} & \textbf{Rook} & \textbf{Queen (True)} & \textbf{Tensor} & \textbf{Base} \\
+			\midrule
+			Intercept         & 3973.28       & 0.40                  & 8252.62         & 7177.34       \\
+			$X_1$             & 0.74          & 0.0032                & 0.21            & 1.22          \\
+			$X_2$             & 0.90          & 0.0032                & 0.26            & 1.57          \\
+			$X_3$             & 1.04          & 0.0031                & 0.27            & 1.92          \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	\textbf{Observation:} If $W$ is unknown, the \textbf{Tensor} model provides significantly more robust estimates than OLS or a misspecified Rook matrix.
+\end{frame}
+
+% --- Conclusion ---
+\begin{frame}{Success and Impact}
+	\begin{itemize}
+		\item \textbf{Sensitivity:} Parametric models (SAR/SDM) are highly sensitive to $W$ choice.
+		\item \textbf{Robustness:} The semi-parametric approach offers a reliable "starting point" for spatial control.
+		\item \textbf{Application:} Provides a clearer picture of municipal productivity in Puerto Rico despite the lack of official GDP data.
+	\end{itemize}
+\end{frame}
+
+\end{document}
