@@ -175,3 +175,6 @@ docs/papers/*.pdf
 *.json
 *.parquet
 qcew/
+*.nav
+*.snm
+*.toc
