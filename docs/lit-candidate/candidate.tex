@@ -25,15 +25,15 @@
 \date{2026-02-08}
 
 \begin{document}
-
+e
 \maketitle
 \tableofcontents
 
 \vspace{.25in}
 
-\section{Paper 1: On the four types of weight functions for spatial contiguity matrix}
+\section*{Paper 1: On the four types of weight functions for spatial contiguity matrix}
 
-\subsection{Summary}
+\subsection*{Summary}
 The studies of spatial complexity have resulted in new understanding of the distance-decay functions of geography.
 The weight functions of spatial autocorrelation should be consistent with the functions of spatial distribution and
 interaction. This paper is on “spatial autocorrelation analysis” of spatial autocorrelation. The 1-dimension spatial
@@ -42,14 +42,14 @@ kinds of weight function in common use for the 2-dimensional spatial autocorrela
 at how to select a proper weight function to construct a spatial contiguity matrix for spatial analysis. The scopes
 of application of different weight functions are defined in terms of the characters of their ACFs and PACFs. \cite{chen2012four}
 
-\subsection{Metadata}
+\subsection*{Metadata}
 \begin{enumerate}
 	\item \textbf{Link:} https://link.springer.com/article/10.1007/s12076-011-0076-6
 	\item \textbf{Journal Name:} Letters in Spatial and Resource Sciences
 	\item \textbf{Rank:} Q2
 \end{enumerate}
 
-\subsection{Conclusions}
+\subsection*{Conclusions}
 \begin{itemize}
 	\item \textbf{Objective:} To provide an objective criterion for selecting spatial weight functions based on the
 	      consistency between spatial distribution, interaction, and scale.
@@ -70,9 +70,9 @@ of application of different weight functions are defined in terms of the charact
 	      \end{itemize}
 \end{itemize}
 
-\section{Paper 2: Autoregressive Spatial Smoothing and Temporal Spline Smoothing for Mapping Rates}
+\section*{Paper 2: Autoregressive Spatial Smoothing and Temporal \\Spline Smoothing for Mapping Rates}
 
-\subsection{Summary}
+\subsection*{Summary}
 This article proposes generalized additive mixed models for the analysis of geographic and temporal variability of mortality rates.
 This class of models accommodates random spatial effects and fixed and random temporal components. Spatiotemporal models that
 use autoregressive local smoothing across the spatial dimension and B-spline smoothing over the temporal dimension are developed.
@@ -81,16 +81,17 @@ of mortality risks can be monitored over time. Regions with consistently high ra
 The methodology is illustrated by analysis of British Columbia infant mortality data. \cite{macnab2001autoregressive}
 \cite{chen2012four}
 
-\subsection{Metadata}
+\subsection*{Metadata}
 \begin{enumerate}
 	\item \textbf{Link:}  https://doi.org/10.1111/j.0006-341X.2001.00949.x
 	\item \textbf{Journal Name:} Biometrics Journal of the international Biometric society
 	\item \textbf{Rank:} Q1
 \end{enumerate}
 
-\section{Template}
+\section*{Paper 3: On confidence intervals for generalized additive models based on
+  penalized regression splines}
 
-\subsection{Summary}
+\subsection*{Summary}
 Generalized additive models represented using low rank penalized regression splines, estimated by penalized likelihood
 maximisation and with smoothness selected by generalized cross validation or similar criteria, provide a computationally
 efficient general framework for practical smooth modelling. Various authors have proposed approximate Bayesian interval
@@ -105,16 +106,17 @@ are not as reliable. Since this is likely to result from the neglect of smoothin
 efficient simulation method is proposed to account for smoothing parameter uncertainty: this is demonstrated to
 substantially improve the performance of component-wise intervals. \cite{wood2006confidence}
 
-\subsection{Metadata}
+\subsection*{Metadata}
 \begin{enumerate}
 	\item \textbf{Link:}  https://doi.org/10.1111/j.1467-842X.2006.00450.x
 	\item \textbf{Journal Name:} Australian Statistical Publishing Association
 	\item \textbf{Rank:} Q3
 \end{enumerate}
 
-\section{Paper 3: GAMs with integrated model selection using penalized regression splines and applications to environmental modelling}
+\section*{Paper 4: GAMs with integrated model selection using penalized regression
+  splines and applications to environmental modelling}
 
-\subsection{Summary}
+\subsection*{Summary}
 Generalized additive models (GAMs) have been popularized by the work of Hastie and Tibshirani (Generalized Additive Models (1990))
 and the availability of user friendly gam software in Splus. However, whilst it is flexible and efficient, the gam framework
 based on backfitting with linear smoothers presents some difficulties when it comes to model selection and inference. On the
@@ -131,16 +133,16 @@ approach to GAMs implemented in the R package mgcv, and includes two environment
 in the package.
 \cite{wood2002gams}
 
-\subsection{Metadata}
+\subsection*{Metadata}
 \begin{enumerate}
 	\item \textbf{Link:} https://doi.org/10.1016/S0304-3800(02)00193-X
 	\item \textbf{Journal Name:} Ecological modelling
 	\item \textbf{Rank:} Q1
 \end{enumerate}
 
-\section{Paper 4: Thin Plate Regression Splines}
+\section*{Paper 5: Thin Plate Regression Splines}
 
-\subsection{Summary}
+\subsection*{Summary}
 I discuss the production of low rank smoothers for $d \ge 1$ dimensional data, which can be fitted by regression or penalized
 regression methods. The smoothers are constructed by a simple transformation and truncation of the basis that arises from the
 solution of the thin plate spline smoothing problem and are optimal in the sense that the truncation is designed to result in
@@ -156,7 +158,7 @@ unpenalized spline-like terms in linear and generalized linear models, and these
 terms from the point of view of model selection, inference and diagnostics.
 \cite{wood2003thin}
 
-\subsection{Metadata}
+\subsection**{Metadata}
 \begin{enumerate}
 	\item \textbf{Link:} https://doi.org/10.1111/1467-9868.00374
 	\item \textbf{Journal Name:} Journal of the Royal Statistical Society Series B: Statistical Methodology
@@ -164,9 +166,9 @@ terms from the point of view of model selection, inference and diagnostics.
 \end{enumerate}
 
 
-\section{Paper 5: Selecting the number of knots for penalized splines}
+\section*{Paper 6: Selecting the number of knots for penalized splines}
 
-\subsection{Summary}
+\subsection*{Summary}
 Penalized splines, or P-splines, are regression splines fit by least-squares with a roughness penalty.P-splines have much in
 common with smoothing splines, but the type of penalty used with a P-spline is somewhat more general than for a smoothing spline.
 Also, the number and location of the knots of a P-spline is not fixed as with a smoothing spline. Generally, the knots of a
@@ -181,26 +183,46 @@ Demmler–Reinsch basis is not effective for smoothing splines because smoothing
 however, the Demmler–Reinsch basis is very useful for super-fast generalized cross-validation.
 \cite{ruppert2002selecting}
 
-\subsection{Metadata}
+\subsection*{Metadata}
 \begin{enumerate}
 	\item \textbf{Link:} https://doi.org/10.1198/106186002853
 	\item \textbf{Journal Name:} Journal of computational and graphical statistics
 	\item \textbf{Rank:} Q1
 \end{enumerate}
 
-\section{Template}
+\section*{Paper 7: A review of performance criteria to validate simulation models}
 
-\subsection{Summary}
+\subsection*{Summary}
+This study reviews performance criteria adequate to validate simulation models through the comparison of two quantitative
+data sets, concerning historical and simulated data. The criteria reviewed were organized according to its characteristics
+into the groups: error-based measures, information theory measures, information criteria, parametric tests, non-parametric
+tests, distance-based measures and combined measures. Each criterion is reviewed through its mathematic definition, its
+applications in literature and the identification of its advantages and drawbacks. The features assessed by each criterion
+are identified and discussed. This study provides a concise outline over the criteria reviewed, which can be used as a guide
+to help developers of simulation models into the decision on the most appropriate criteria to validate their models.
+\cite{hora2015review}
+
+\subsection*{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:} https://doi.org/10.1111/exsy.12111
+	\item \textbf{Journal Name:} Expert Systems
+	\item \textbf{Rank:} Q1
+\end{enumerate}
+
+
+\section*{Template}
+
+\subsection*{Summary}
 \cite{chen2012four}
 
-\subsection{Metadata}
+\subsection*{Metadata}
 \begin{enumerate}
 	\item \textbf{Link:}
 	\item \textbf{Journal Name:}
 	\item \textbf{Rank:}
 \end{enumerate}
 
-\subsection{Conclusions}
+\subsection*{Conclusions}
 
 
 \printbibliography
