@@ -210,6 +210,45 @@ to help developers of simulation models into the decision on the most appropriat
 \end{enumerate}
 
 
+\section*{Spatial smoothing in Bayesian models: a comparison of weights matrix specifications and their impact on inference}
+
+\subsection*{Summary}
+\textbf{Background:} When analysing spatial data, it is important to account for spatial autocorrelation. In Bayesian statistics,
+spatial autocorrelation is commonly modelled by the intrinsic conditional autoregressive prior distribution. At
+the heart of this model is a spatial weights matrix which controls the behaviour and degree of spatial smoothing.
+The purpose of this study is to review the main specifications of the spatial weights matrix found in the literature,
+and together with some new and less common specifications, compare the effect that they have on smoothing and
+model performance.
+
+\textbf{Methods:} The popular BYM model is described, and a simple solution for addressing the identifiability issue among
+the spatial random effects is provided. Seventeen different definitions of the spatial weights matrix are defined,
+which are classified into four classes: adjacency-based weights, and weights based on geographic distance, distance
+between covariate values, and a hybrid of geographic and covariate distances. These last two definitions embody the
+main novelty of this research. Three synthetic data sets are generated, each representing a different underlying spatial
+structure. These data sets together with a real spatial data set from the literature are analysed using the models. The
+models are evaluated using the deviance information criterion and Moran’s I statistic.
+Results: The deviance information criterion indicated that the model which uses binary, first-order adjacency
+weights to perform spatial smoothing is generally an optimal choice for achieving a good model fit. Distance-based
+weights also generally perform quite well and offer similar parameter interpretations. The less commonly explored
+options for performing spatial smoothing generally provided a worse model fit than models with more traditional
+approaches to smoothing, but usually outperformed the benchmark model which did not conduct spatial
+smoothing.
+
+\textbf{Conclusions:} The specification of the spatial weights matrix can have a colossal impact on model fit and parameter
+estimation. The results provide some evidence that a smaller number of neighbours used in defining the spatial
+weights matrix yields a better model fit, and may provide a more accurate representation of the underlying spatial
+random field. The commonly used binary, first-order adjacency weights still appear to be a good choice for implementing
+spatial smoothing.
+\cite{duncan2017spatial}
+
+\subsection*{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:}
+	\item \textbf{Journal Name:} International journal of health geographics
+	\item \textbf{Rank:} Q1
+\end{enumerate}
+
+
 \section*{Template}
 
 \subsection*{Summary}
