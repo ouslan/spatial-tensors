@@ -78,7 +78,7 @@ This class of models accommodates random spatial effects and fixed and random te
 use autoregressive local smoothing across the spatial dimension and B-spline smoothing over the temporal dimension are developed.
 The objective is the identification of temporal trends and the production of a series of smoothed maps from which spatial patterns
 of mortality risks can be monitored over time. Regions with consistently high rate estimates may be followed for further investigation.
-The methodology is illustrated by analysis of British Columbia infant mortality data.
+The methodology is illustrated by analysis of British Columbia infant mortality data. \cite{macnab2001autoregressive}
 \cite{chen2012four}
 
 \subsection{Metadata}
@@ -86,6 +86,30 @@ The methodology is illustrated by analysis of British Columbia infant mortality 
 	\item \textbf{Link:}  https://doi.org/10.1111/j.0006-341X.2001.00949.x
 	\item \textbf{Journal Name:} Biometrics Journal of the international Biometric society
 	\item \textbf{Rank:} Q1
+\end{enumerate}
+
+\section{Template}
+
+\subsection{Summary}
+Generalized additive models represented using low rank penalized regression splines, estimated by penalized likelihood
+maximisation and with smoothness selected by generalized cross validation or similar criteria, provide a computationally
+efficient general framework for practical smooth modelling. Various authors have proposed approximate Bayesian interval
+estimates for such models, based on extensions of the work of Wahba, G. (1983)[Bayesian confidence intervals for the
+		cross validated smoothing spline. J. R. Statist. Soc. B45, 133–150] and Silverman, B.W. (1985)[Some aspects of the spline
+		smoothing approach to nonparametric regression curve fitting. J. R. Statist. Soc. B47, 1–52] on smoothing spline
+models of Gaussian data, but testing of such intervals has been rather limited and there is little supporting
+theory for the approximations used in the generalized case. This paper aims to improve this situation by providing
+simulation tests and obtaining asymptotic results supporting the approximations employed for the generalized case.
+The simulation results suggest that while across-the-model performance is good, component-wise coverage probabilities
+are not as reliable. Since this is likely to result from the neglect of smoothing parameter variability, a simple and
+efficient simulation method is proposed to account for smoothing parameter uncertainty: this is demonstrated to
+substantially improve the performance of component-wise intervals. \cite{wood2006confidence}
+
+\subsection{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:}  https://doi.org/10.1111/j.1467-842X.2006.00450.x
+	\item \textbf{Journal Name:} Australian Statistical Publishing Association
+	\item \textbf{Rank:} Q3
 \end{enumerate}
 
 
