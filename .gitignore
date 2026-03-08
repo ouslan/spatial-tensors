@@ -178,3 +178,7 @@ qcew/
 *.nav
 *.snm
 *.toc
+*.bbl
+*.blg
+*.bcf
+*.xml

@@ -1,0 +1,85 @@
+\documentclass[10pt, oneside]{article}
+\usepackage{amsmath, amsthm, amssymb, calrsfs, wasysym, verbatim, bbm, color, graphics, geometry}
+\usepackage{graphicx}
+\graphicspath{ {./assets/} }
+\geometry{tmargin=.75in, bmargin=.75in, lmargin=.75in, rmargin = .75in}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Cdot}{\boldsymbol{\cdot}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{conv}{Convention}
+\newtheorem{rem}{Remark}
+\newtheorem{lem}{Lemma}
+\newtheorem{cor}{Corollary}
+\usepackage[backend=biber,style=authoryear]{biblatex}
+\addbibresource{reference.bib}
+
+\title{Summary Report: Candidate literary paper to be used}
+\author{Alejandro Ouslan}
+\date{2026-02-08}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\vspace{.25in}
+
+\section{Paper 1: On the four types of weight functions for spatial contiguity matrix}
+
+\subsection{Summary}
+The studies of spatial complexity have resulted in new understanding of the distance-decay functions of geography.
+The weight functions of spatial autocorrelation should be consistent with the functions of spatial distribution and
+interaction. This paper is on “spatial autocorrelation analysis” of spatial autocorrelation. The 1-dimension spatial
+autocorrelation function (ACF) and partial autocorrelation function (PACF) of space series are employed to analyze four
+kinds of weight function in common use for the 2-dimensional spatial autocorrelation model. The aim of this study is
+at how to select a proper weight function to construct a spatial contiguity matrix for spatial analysis. The scopes
+of application of different weight functions are defined in terms of the characters of their ACFs and PACFs. \cite{chen2012four}
+
+\subsection{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:} https://link.springer.com/article/10.1007/s12076-011-0076-6
+	\item \textbf{Journal Name:} Letters in Spatial and Resource Sciences
+	\item \textbf{Rank:} Q2
+\end{enumerate}
+
+\subsection{Conclusions}
+\begin{itemize}
+	\item \textbf{Objective:} To provide an objective criterion for selecting spatial weight functions based on the consistency between spatial distribution, interaction, and scale.
+	\item \textbf{Methodology:} The author uses 1-dimensional Autocorrelation Functions (ACF) and Partial Autocorrelation Functions (PACF) to analyze the behavior and "spatial memory" of four common weight functions used in 2-dimensional spatial analysis.
+	\item \textbf{Key Findings:}
+	      \begin{itemize}
+		      \item Weight functions must match the underlying geographical process (e.g., power-law vs. exponential distributions).
+		      \item The choice of function is critical at "critical states" (the transition between chaos and order), where different functions yield significantly different analytical results.
+	      \end{itemize}
+	\item \textbf{Conclusion:}
+	      \begin{itemize}
+		      \item \textbf{Power functions} are best for large-scale complex systems.
+		      \item \textbf{Exponential functions} suit medium-to-small scale simple systems.
+		      \item \textbf{Step functions} are ideal for local-level analysis and negative correlation patterns.
+	      \end{itemize}
+\end{itemize}
+
+\section{Template}
+
+\subsection{Summary}
+\cite{chen2012four}
+
+\subsection{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:}
+	\item \textbf{Journal Name:}
+	\item \textbf{Rank:}
+\end{enumerate}
+
+\subsection{Conclusions}
+
+
+\printbibliography
+\end{document}
