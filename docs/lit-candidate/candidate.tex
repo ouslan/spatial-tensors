@@ -112,6 +112,32 @@ substantially improve the performance of component-wise intervals. \cite{wood200
 	\item \textbf{Rank:} Q3
 \end{enumerate}
 
+\section{Paper 3: GAMs with integrated model selection using penalized regression splines and applications to environmental modelling}
+
+\subsection{Summary}
+Generalized additive models (GAMs) have been popularized by the work of Hastie and Tibshirani (Generalized Additive Models (1990))
+and the availability of user friendly gam software in Splus. However, whilst it is flexible and efficient, the gam framework
+based on backfitting with linear smoothers presents some difficulties when it comes to model selection and inference. On the
+other hand, the mathematically elegant work of Wahba (Spline Models for Observational Data (1990)) and co-workers on Generalized
+Spline Smoothing (GSS) provides a rigorous framework for model selection (SIAM J. Sci. Statist. Comput. 12 (1991) 383) and
+inference with GAMs constructed from smoothing splines: but unfortunately these models are computationally very expensive
+with operations counts that are of cubic order in the number of data. A ‘middle way’ between these approaches is to construct
+GAMs using penalized regression splines (e.g. Marx and Eilers, Comput. Statist. Data Anal. (1998)). In this paper, we develop
+this idea further and show how GAMs constructed using penalized regression splines can be used to get most of the practical
+benefits of GSS models, including well founded model selection and multi-dimensional smooth terms, with the ease of use and
+low computational cost of backfit GAMs. Inference with the resulting methods also requires slightly fewer approximations
+than are employed in the GAM modelling software provided in Splus. This paper presents the basic mathematical and numerical
+approach to GAMs implemented in the R package mgcv, and includes two environmental examples using the methods as implemented
+in the package.
+\cite{wood2002gams}
+
+\subsection{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:} https://doi.org/10.1016/S0304-3800(02)00193-X
+	\item \textbf{Journal Name:} Ecological modelling
+	\item \textbf{Rank:}
+\end{enumerate}
+
 
 \section{Template}
 
