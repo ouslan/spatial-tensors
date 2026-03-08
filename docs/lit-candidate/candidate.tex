@@ -164,6 +164,30 @@ terms from the point of view of model selection, inference and diagnostics.
 \end{enumerate}
 
 
+\section{Paper 5: Selecting the number of knots for penalized splines}
+
+\subsection{Summary}
+Penalized splines, or P-splines, are regression splines fit by least-squares with a roughness penalty.P-splines have much in
+common with smoothing splines, but the type of penalty used with a P-spline is somewhat more general than for a smoothing spline.
+Also, the number and location of the knots of a P-spline is not fixed as with a smoothing spline. Generally, the knots of a
+P-spline are at fixed quantiles of the independent variable and the only tuning parameters to choose are the number of knots
+and the penalty parameter. In this article, the effects of the number of knots on the performance of P-splines are studied.
+Two algorithms are proposed for the automatic selection of the number of knots. The myopic algorithm stops when no improvement
+in the generalized cross-validation statistic (GCV) is noticed with the last increase in the number of knots. The full search
+examines all candidates in a fixed sequence of possible numbers of knots and chooses the candidate that minimizes GCV.The
+myopic algorithm works well in many cases but can stop prematurely. The full-search algorithm worked well in all examples
+examined. A Demmler–Reinsch type diagonalization for computing univariate and additive P-splines is described. The
+Demmler–Reinsch basis is not effective for smoothing splines because smoothing splines have too many knots. For P-splines,
+however, the Demmler–Reinsch basis is very useful for super-fast generalized cross-validation.
+\cite{ruppert2002selecting}
+
+\subsection{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:} https://doi.org/10.1198/106186002853
+	\item \textbf{Journal Name:} Journal of computational and graphical statistics
+	\item \textbf{Rank:} Q1
+\end{enumerate}
+
 \section{Template}
 
 \subsection{Summary}
