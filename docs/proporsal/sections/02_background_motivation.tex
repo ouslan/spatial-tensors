@@ -1,6 +1,9 @@
 
-Starting with out, economic theory tells that you can model the productivity of a given economy as a function
-of labor $(L)$ and capital $(K)$ this can be model in the following equation.
+
+There are many context where were spatial relationships can be presumed but are not easily established. One
+of such fields is in determining a production function in a given state. Traditionally for this problems economic
+theory uses a Cobb-Douglas production function \cite{cobb1928theory}. This function model the productivity of a
+given economy as a function of labor $(L)$ and capital $(K)$ this can be model is written in the following:
 
 $$
 	Y = A K^\alpha L^\beta
@@ -18,14 +21,16 @@ Where:
 	      resulting from a 1\% change in labor, holding capital constant.
 \end{itemize}
 
-In practice, though varios data sources $L,K$ and $Y$ are known and $\alpha$ and $\beta$ are unknown. The unknown
-parameters are of special interest to economist and for public policy as they highlight areas where local government
-could invest to increase productivity. However as this models are representations of more complex models is
-reasonable to asume there is some unseen components in our models. An example of this could be the pretense of
-underground economies, this referring to transactions that could be reflected in the productivity but can not
+In practice $L,K$ and $Y$ are known and $\alpha$ and $\beta$ are unknown. $\alpha$ and $\beta$ are elasticity factors that ranges
+from $0$ and $1$, empirical data shows that healthy economies hover on a labor factor of $0.6$ \cite{douglas1976cobb}.
+In the context of local government, these unknown parameters are of interest as they highlight areas where local government
+could invest to increase productivity. However as this models are representations of more complex models, it is
+reasonable to asume there are some unseen components in our models. An example of this could be the pretense of
+informal economies \cite{williams1994spatial}, this referring to transactions that could be reflected in the productivity but can not
 be reasonably measured through the official means and this could introduce uncertainty into our model.
 
-Turning the Cobb-Douglas equation into a stochastic model can be done in the following format:
+Following Econometric theory one could turn Cobb-Douglas equation into a stochastic model \cite{zellner1966specification}.
+This can be done in the following format:
 \[
 	\begin{split}
 		Y         & = A K^\alpha L^\beta                                                             \\
@@ -34,10 +39,7 @@ Turning the Cobb-Douglas equation into a stochastic model can be done in the fol
 	\end{split}
 \]
 
-Returning to the original form would give:
-\begin{equation}
-	Y = A K^\alpha L^\beta e^{\epsilon}
-\end{equation}
+
 
 \subsection{Spatial Modeling}
 

@@ -6,6 +6,9 @@
 \usepackage{amsmath}
 \usepackage{float}
 \usepackage[inline,shortlabels]{enumitem}
+\usepackage[backend=biber,style=numeric]{biblatex}
+\addbibresource{reference.bib}
+
 \begin{document}
 
 % Cover Page
@@ -13,10 +16,10 @@
 
 \newpage
 
+\input{sections/00a_metadata.tex}
+
 \section{Introduction}
 \input{sections/01_introduction.tex}
-
-\input{sections/00a_metadata.tex}
 
 \section{Background and Motivation}
 \input{sections/02_background_motivation.tex}
@@ -35,7 +38,6 @@
 
 \newpage
 
-\bibliographystyle{plain}
-\bibliography{reference}
+\printbibliography
 
 \end{document}
