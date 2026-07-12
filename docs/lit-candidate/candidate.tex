@@ -1,0 +1,268 @@
+\documentclass[10pt, oneside]{article}
+\usepackage{amsmath, amsthm, amssymb, calrsfs, wasysym, verbatim, bbm, color, graphics, geometry}
+\usepackage{graphicx}
+\graphicspath{ {./assets/} }
+\geometry{tmargin=.75in, bmargin=.75in, lmargin=.75in, rmargin = .75in}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Cdot}{\boldsymbol{\cdot}}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{defn}{Definition}
+\newtheorem{conv}{Convention}
+\newtheorem{rem}{Remark}
+\newtheorem{lem}{Lemma}
+\newtheorem{cor}{Corollary}
+\usepackage[backend=biber,style=authoryear]{biblatex}
+\addbibresource{reference.bib}
+
+\title{Summary Report: Candidate literary paper to be used}
+\author{Alejandro Ouslan}
+\date{2026-02-08}
+
+\begin{document}
+e
+\maketitle
+\tableofcontents
+
+\vspace{.25in}
+
+\section*{Paper 1: On the four types of weight functions for spatial contiguity matrix}
+
+\subsection*{Summary}
+The studies of spatial complexity have resulted in new understanding of the distance-decay functions of geography.
+The weight functions of spatial autocorrelation should be consistent with the functions of spatial distribution and
+interaction. This paper is on “spatial autocorrelation analysis” of spatial autocorrelation. The 1-dimension spatial
+autocorrelation function (ACF) and partial autocorrelation function (PACF) of space series are employed to analyze four
+kinds of weight function in common use for the 2-dimensional spatial autocorrelation model. The aim of this study is
+at how to select a proper weight function to construct a spatial contiguity matrix for spatial analysis. The scopes
+of application of different weight functions are defined in terms of the characters of their ACFs and PACFs. \cite{chen2012four}
+
+\subsection*{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:} https://link.springer.com/article/10.1007/s12076-011-0076-6
+	\item \textbf{Journal Name:} Letters in Spatial and Resource Sciences
+	\item \textbf{Rank:} Q2
+\end{enumerate}
+
+\subsection*{Conclusions}
+\begin{itemize}
+	\item \textbf{Objective:} To provide an objective criterion for selecting spatial weight functions based on the
+	      consistency between spatial distribution, interaction, and scale.
+	\item \textbf{Methodology:} The author uses 1-dimensional Autocorrelation Functions (ACF) and Partial Autocorrelation
+	      Functions (PACF) to analyze the behavior and "spatial memory" of four common weight functions used in
+	      2-dimensional spatial analysis.
+	\item \textbf{Key Findings:}
+	      \begin{itemize}
+		      \item Weight functions must match the underlying geographical process (e.g., power-law vs. exponential distributions).
+		      \item The choice of function is critical at "critical states" (the transition between chaos and order), where different
+		            functions yield significantly different analytical results.
+	      \end{itemize}
+	\item \textbf{Conclusion:}
+	      \begin{itemize}
+		      \item \textbf{Power functions} are best for large-scale complex systems.
+		      \item \textbf{Exponential functions} suit medium-to-small scale simple systems.
+		      \item \textbf{Step functions} are ideal for local-level analysis and negative correlation patterns.
+	      \end{itemize}
+\end{itemize}
+
+\section*{Paper 2: Autoregressive Spatial Smoothing and Temporal \\Spline Smoothing for Mapping Rates}
+
+\subsection*{Summary}
+This article proposes generalized additive mixed models for the analysis of geographic and temporal variability of mortality rates.
+This class of models accommodates random spatial effects and fixed and random temporal components. Spatiotemporal models that
+use autoregressive local smoothing across the spatial dimension and B-spline smoothing over the temporal dimension are developed.
+The objective is the identification of temporal trends and the production of a series of smoothed maps from which spatial patterns
+of mortality risks can be monitored over time. Regions with consistently high rate estimates may be followed for further investigation.
+The methodology is illustrated by analysis of British Columbia infant mortality data. \cite{macnab2001autoregressive}
+\cite{chen2012four}
+
+\subsection*{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:}  https://doi.org/10.1111/j.0006-341X.2001.00949.x
+	\item \textbf{Journal Name:} Biometrics Journal of the international Biometric society
+	\item \textbf{Rank:} Q1
+\end{enumerate}
+
+\section*{Paper 3: On confidence intervals for generalized additive models based on
+  penalized regression splines}
+
+\subsection*{Summary}
+Generalized additive models represented using low rank penalized regression splines, estimated by penalized likelihood
+maximisation and with smoothness selected by generalized cross validation or similar criteria, provide a computationally
+efficient general framework for practical smooth modelling. Various authors have proposed approximate Bayesian interval
+estimates for such models, based on extensions of the work of Wahba, G. (1983)[Bayesian confidence intervals for the
+		cross validated smoothing spline. J. R. Statist. Soc. B45, 133–150] and Silverman, B.W. (1985)[Some aspects of the spline
+		smoothing approach to nonparametric regression curve fitting. J. R. Statist. Soc. B47, 1–52] on smoothing spline
+models of Gaussian data, but testing of such intervals has been rather limited and there is little supporting
+theory for the approximations used in the generalized case. This paper aims to improve this situation by providing
+simulation tests and obtaining asymptotic results supporting the approximations employed for the generalized case.
+The simulation results suggest that while across-the-model performance is good, component-wise coverage probabilities
+are not as reliable. Since this is likely to result from the neglect of smoothing parameter variability, a simple and
+efficient simulation method is proposed to account for smoothing parameter uncertainty: this is demonstrated to
+substantially improve the performance of component-wise intervals. \cite{wood2006confidence}
+
+\subsection*{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:}  https://doi.org/10.1111/j.1467-842X.2006.00450.x
+	\item \textbf{Journal Name:} Australian Statistical Publishing Association
+	\item \textbf{Rank:} Q3
+\end{enumerate}
+
+\section*{Paper 4: GAMs with integrated model selection using penalized regression
+  splines and applications to environmental modelling}
+
+\subsection*{Summary}
+Generalized additive models (GAMs) have been popularized by the work of Hastie and Tibshirani (Generalized Additive Models (1990))
+and the availability of user friendly gam software in Splus. However, whilst it is flexible and efficient, the gam framework
+based on backfitting with linear smoothers presents some difficulties when it comes to model selection and inference. On the
+other hand, the mathematically elegant work of Wahba (Spline Models for Observational Data (1990)) and co-workers on Generalized
+Spline Smoothing (GSS) provides a rigorous framework for model selection (SIAM J. Sci. Statist. Comput. 12 (1991) 383) and
+inference with GAMs constructed from smoothing splines: but unfortunately these models are computationally very expensive
+with operations counts that are of cubic order in the number of data. A ‘middle way’ between these approaches is to construct
+GAMs using penalized regression splines (e.g. Marx and Eilers, Comput. Statist. Data Anal. (1998)). In this paper, we develop
+this idea further and show how GAMs constructed using penalized regression splines can be used to get most of the practical
+benefits of GSS models, including well founded model selection and multi-dimensional smooth terms, with the ease of use and
+low computational cost of backfit GAMs. Inference with the resulting methods also requires slightly fewer approximations
+than are employed in the GAM modelling software provided in Splus. This paper presents the basic mathematical and numerical
+approach to GAMs implemented in the R package mgcv, and includes two environmental examples using the methods as implemented
+in the package.
+\cite{wood2002gams}
+
+\subsection*{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:} https://doi.org/10.1016/S0304-3800(02)00193-X
+	\item \textbf{Journal Name:} Ecological modelling
+	\item \textbf{Rank:} Q1
+\end{enumerate}
+
+\section*{Paper 5: Thin Plate Regression Splines}
+
+\subsection*{Summary}
+I discuss the production of low rank smoothers for $d \ge 1$ dimensional data, which can be fitted by regression or penalized
+regression methods. The smoothers are constructed by a simple transformation and truncation of the basis that arises from the
+solution of the thin plate spline smoothing problem and are optimal in the sense that the truncation is designed to result in
+the minimum possible perturbation of the thin plate spline smoothing problem given the dimension of the basis used to construct
+the smoother. By making use of Lanczos iteration the basis change and truncation are computationally efficient. The smoothers
+allow the use of approximate thin plate spline models with large data sets, avoid the problems that are associated with ‘knot
+placement’ that usually complicate modelling with regression splines or penalized regression splines, provide a sensible way
+of modelling interaction terms in generalized additive models, provide low rank approximations to generalized smoothing spline
+models, appropriate for use with large data sets, provide a means for incorporating smooth functions of more than one variable
+into non-linear models and improve the computational efficiency of penalized likelihood models incorporating thin plate splines.
+Given that the approach produces spline-like models with a sparse basis, it also provides a natural way of incorporating
+unpenalized spline-like terms in linear and generalized linear models, and these can be treated just like any other model
+terms from the point of view of model selection, inference and diagnostics.
+\cite{wood2003thin}
+
+\subsection**{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:} https://doi.org/10.1111/1467-9868.00374
+	\item \textbf{Journal Name:} Journal of the Royal Statistical Society Series B: Statistical Methodology
+	\item \textbf{Rank:} Q1
+\end{enumerate}
+
+
+\section*{Paper 6: Selecting the number of knots for penalized splines}
+
+\subsection*{Summary}
+Penalized splines, or P-splines, are regression splines fit by least-squares with a roughness penalty.P-splines have much in
+common with smoothing splines, but the type of penalty used with a P-spline is somewhat more general than for a smoothing spline.
+Also, the number and location of the knots of a P-spline is not fixed as with a smoothing spline. Generally, the knots of a
+P-spline are at fixed quantiles of the independent variable and the only tuning parameters to choose are the number of knots
+and the penalty parameter. In this article, the effects of the number of knots on the performance of P-splines are studied.
+Two algorithms are proposed for the automatic selection of the number of knots. The myopic algorithm stops when no improvement
+in the generalized cross-validation statistic (GCV) is noticed with the last increase in the number of knots. The full search
+examines all candidates in a fixed sequence of possible numbers of knots and chooses the candidate that minimizes GCV.The
+myopic algorithm works well in many cases but can stop prematurely. The full-search algorithm worked well in all examples
+examined. A Demmler–Reinsch type diagonalization for computing univariate and additive P-splines is described. The
+Demmler–Reinsch basis is not effective for smoothing splines because smoothing splines have too many knots. For P-splines,
+however, the Demmler–Reinsch basis is very useful for super-fast generalized cross-validation.
+\cite{ruppert2002selecting}
+
+\subsection*{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:} https://doi.org/10.1198/106186002853
+	\item \textbf{Journal Name:} Journal of computational and graphical statistics
+	\item \textbf{Rank:} Q1
+\end{enumerate}
+
+\section*{Paper 7: A review of performance criteria to validate simulation models}
+
+\subsection*{Summary}
+This study reviews performance criteria adequate to validate simulation models through the comparison of two quantitative
+data sets, concerning historical and simulated data. The criteria reviewed were organized according to its characteristics
+into the groups: error-based measures, information theory measures, information criteria, parametric tests, non-parametric
+tests, distance-based measures and combined measures. Each criterion is reviewed through its mathematic definition, its
+applications in literature and the identification of its advantages and drawbacks. The features assessed by each criterion
+are identified and discussed. This study provides a concise outline over the criteria reviewed, which can be used as a guide
+to help developers of simulation models into the decision on the most appropriate criteria to validate their models.
+\cite{hora2015review}
+
+\subsection*{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:} https://doi.org/10.1111/exsy.12111
+	\item \textbf{Journal Name:} Expert Systems
+	\item \textbf{Rank:} Q1
+\end{enumerate}
+
+
+\section*{Spatial smoothing in Bayesian models: a comparison of weights matrix specifications and their impact on inference}
+
+\subsection*{Summary}
+\textbf{Background:} When analysing spatial data, it is important to account for spatial autocorrelation. In Bayesian statistics,
+spatial autocorrelation is commonly modelled by the intrinsic conditional autoregressive prior distribution. At
+the heart of this model is a spatial weights matrix which controls the behaviour and degree of spatial smoothing.
+The purpose of this study is to review the main specifications of the spatial weights matrix found in the literature,
+and together with some new and less common specifications, compare the effect that they have on smoothing and
+model performance.
+
+\textbf{Methods:} The popular BYM model is described, and a simple solution for addressing the identifiability issue among
+the spatial random effects is provided. Seventeen different definitions of the spatial weights matrix are defined,
+which are classified into four classes: adjacency-based weights, and weights based on geographic distance, distance
+between covariate values, and a hybrid of geographic and covariate distances. These last two definitions embody the
+main novelty of this research. Three synthetic data sets are generated, each representing a different underlying spatial
+structure. These data sets together with a real spatial data set from the literature are analysed using the models. The
+models are evaluated using the deviance information criterion and Moran’s I statistic.
+Results: The deviance information criterion indicated that the model which uses binary, first-order adjacency
+weights to perform spatial smoothing is generally an optimal choice for achieving a good model fit. Distance-based
+weights also generally perform quite well and offer similar parameter interpretations. The less commonly explored
+options for performing spatial smoothing generally provided a worse model fit than models with more traditional
+approaches to smoothing, but usually outperformed the benchmark model which did not conduct spatial
+smoothing.
+
+\textbf{Conclusions:} The specification of the spatial weights matrix can have a colossal impact on model fit and parameter
+estimation. The results provide some evidence that a smaller number of neighbours used in defining the spatial
+weights matrix yields a better model fit, and may provide a more accurate representation of the underlying spatial
+random field. The commonly used binary, first-order adjacency weights still appear to be a good choice for implementing
+spatial smoothing.
+\cite{duncan2017spatial}
+
+\subsection*{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:}
+	\item \textbf{Journal Name:} International journal of health geographics
+	\item \textbf{Rank:} Q1
+\end{enumerate}
+
+
+\section*{Template}
+
+\subsection*{Summary}
+\cite{chen2012four}
+
+\subsection*{Metadata}
+\begin{enumerate}
+	\item \textbf{Link:}
+	\item \textbf{Journal Name:}
+	\item \textbf{Rank:}
+\end{enumerate}
+
+\subsection*{Conclusions}
+
+
+\printbibliography
+\end{document}

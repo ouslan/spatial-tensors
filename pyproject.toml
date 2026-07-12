@@ -6,7 +6,9 @@ dependencies = [
   "jp-tools>=0.5.7",
   "matplotlib>=3.10.8",
   "pandas>=3.0.0",
+  "patsy>=1.0.2",
   "polars>=1.38.1",
+  "pymc>=5.28.0",
   "pysal>=26.1",
 ]
 name = "st_repl"

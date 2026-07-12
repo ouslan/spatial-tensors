@@ -191,21 +191,21 @@ cython_debug/
 # ignore mac files
 *.DS_Store
 
-# ignore quarter files 
-# vscode
-.vscode
-data_process.log
-docs/aux/*
-docs/out/*
-qcew
-
-# Devenv
-.devenv*
-devenv.local.nix
-devenv.local.yaml
-
-# direnv
-.direnv
-
-# pre-commit
-.pre-commit-config.yaml
+# Remove Latex stuff
+*.aux
+*.fdb_latexmk
+*.fls 
+*.out
+*.gz
+*.ddb
+*.zip
+*.json
+*.parquet
+qcew/
+*.nav
+*.snm
+*.toc
+*.bbl
+*.blg
+*.bcf
+*.xml

@@ -1,16 +1,17 @@
 import logging
-import arviz as az
+from pathlib import Path
+
 import geopandas as gpd
 import numpy as np
+from jp_qcew import CleanQCEW
 import pandas as pd
 import polars as pl
-from pysal.lib import weights
-from shapely import wkt
-from spreg import dgp_lag
-import statsmodels.api as sm
-from sklearn.linear_model import Ridge
-from patsy import dmatrix
 import pymc as pm
+import statsmodels.api as sm
+from libpysal import weights
+from patsy import dmatrix
+from sklearn.linear_model import Ridge
+from spreg import dgp_lag
 
 from .data_pull import DataPull
 
@@ -19,66 +20,66 @@ class SpatialReg(DataPull):
     def __init__(
         self,
         saving_dir: str = "data/",
-        database_file: str = "data.ddb",
         log_file: str = "data_process.log",
     ):
-        super().__init__(saving_dir, database_file, log_file)
+        super().__init__(saving_dir, log_file)
 
         # Define the spatial weight matrix
         self.wr = weights.contiguity.Rook.from_dataframe(
-            self.spatial_df(), use_index=False
+            self.county_geom(), use_index=False
         )
 
         self.wq = weights.contiguity.Queen.from_dataframe(
-            self.spatial_df(), use_index=False
+            self.county_geom(), use_index=False
         )
         self.wq.transform = "r"
 
-        self.wk6 = weights.KNN.from_dataframe(self.spatial_df(), k=6, use_index=False)
+        self.wk6 = weights.KNN.from_dataframe(self.county_geom(), k=6, use_index=False)
         self.wk6.transform = "r"
 
     def spatial_data(
-        self, mu: int, sigma: int, rho: float, time: int, seed: int
+        self, alpha: int, beta: int, sigma: int, rho: float, seed: int
     ) -> gpd.GeoDataFrame:
-        rng_global = np.random.default_rng(seed=seed)
-        # Number of observations
-        gdf = self.spatial_df()
-        n_obs = len(gdf)
 
-        # Create the independent variables for 4 variables that com from a normal distribution X ~ N(mu, sigma)
-        X = np.ones((n_obs, 4))
+        gdf = self.quasi_data().sort_values(["year", "qtr", "name"]).to_crs("EPSG:3395")
 
-        for i in range(1, 4):
-            rng = np.random.default_rng(seed=seed + i)
-            X[:, i] = rng.normal(loc=mu, scale=sigma, size=n_obs)
+        all_slices = []
 
-        # Define Beta coefficients
-        beta = np.array([4, 5, 6, 7])
+        for year in range(2002, 2023):
+            for qtr in range(1, 5):
 
-        # Compute XB matrix
-        xb = X @ beta
-        xb = xb.reshape(-1, 1)
+                rng_global = np.random.default_rng(seed=seed + (year * 10 + qtr))
 
-        u = rng_global.normal(loc=0, scale=2, size=n_obs).reshape(-1, 1)
+                slice_df = gdf[(gdf["year"] == year) & (gdf["qtr"] == qtr)].reset_index(
+                    drop=True
+                )
 
-        # calculate the spatial lag
-        y_true = dgp_lag(u, xb, self.wq, rho=rho)
+                X = slice_df[["total_employment", "total_wages"]].values
+                X = sm.add_constant(X)
 
-        gdf["y_true"] = y_true
+                n_obs = len(slice_df)
 
-        # pre calculate the spatial lag and apply them
-        gdf["X_1"] = X[:, 1]
-        gdf["X_2"] = X[:, 2]
-        gdf["X_3"] = X[:, 3]
-        gdf["centroid"] = gdf.centroid
-        gdf["lat"] = gdf["centroid"].x
-        gdf["lon"] = gdf["centroid"].y
-        gdf["w_rook"] = weights.lag_spatial(self.wr, y_true)
-        gdf["w_queen"] = weights.lag_spatial(self.wq, y_true)
-        gdf["w_knn6"] = weights.lag_spatial(self.wk6, y_true)
-        gdf["time"] = time
+                coef = np.array([200, alpha, beta])
+                xb = (X @ coef).reshape(-1, 1)
 
-        return gdf
+                u = rng_global.normal(loc=0, scale=sigma, size=n_obs).reshape(-1, 1)
+
+                y_true = dgp_lag(u, xb, self.wq, rho=rho, imethod="true_inv")
+
+                slice_df["y_true"] = y_true
+                slice_df["centroid"] = slice_df.geometry.centroid
+                slice_df["lat"] = slice_df["centroid"].y
+                slice_df["lon"] = slice_df["centroid"].x
+
+                slice_df["w_rook"] = weights.lag_spatial(self.wr, y_true)
+                slice_df["w_queen"] = weights.lag_spatial(self.wq, y_true)
+                slice_df["w_knn6"] = weights.lag_spatial(self.wk6, y_true)
+
+                all_slices.append(slice_df)  # ✅ append here
+
+        master = gpd.GeoDataFrame(pd.concat(all_slices, ignore_index=True), crs=gdf.crs)
+
+        return master
 
     def spatial_panel(self, time, rho, seed):
         gdf = gpd.GeoDataFrame(
@@ -501,14 +502,6 @@ class SpatialReg(DataPull):
         X = sm.add_constant(xb)
         return sm.OLS(y_true, X).fit()
 
-    def spatial_df(self) -> gpd.GeoDataFrame:
-        gdf = gpd.GeoDataFrame(self.make_spatial_table())
-        gdf["geometry"] = gdf["geometry"].apply(wkt.loads)
-        gdf = gdf.set_geometry("geometry").set_crs("EPSG:4269", allow_override=True)
-        gdf = gdf.to_crs("EPSG:3395")
-        gdf["zipcode"] = gdf["zipcode"].astype(str)
-        return gdf
-
     def calculate_spatial_lag(self, df, w, column):
         # Reshape y to match the number of rows in the dataframe
         y = df[column].values.reshape(-1, 1)
@@ -517,3 +510,73 @@ class SpatialReg(DataPull):
         spatial_lag = weights.lag_spatial(w, y)
 
         return spatial_lag
+
+    def quasi_data(self) -> gpd.GeoDataFrame:
+        data_path = Path(f"{self.saving_dir}processed/pr-qcew-2024-2.parquet")
+        if not data_path.exists():
+            CleanQCEW(self.saving_dir).make_qcew_dataset()
+
+        df_qcew = self.conn.execute(f"""
+                    SELECT
+                        year,
+                        qtr,
+                        phys_addr_5_zip,
+                        phys_addr_city,
+                        ui_addr_5_zip,
+                        mail_addr_5_zip,
+                        ein,
+                        first_month_employment,
+                        total_wages,
+                        second_month_employment,
+                        third_month_employment,
+                        naics_code
+                    FROM '{self.saving_dir}processed/pr-qcew-*.parquet';
+                    """).pl()
+        df_qcew = df_qcew.with_columns(
+            first_month_employment=pl.col("first_month_employment").fill_null(
+                strategy="zero"
+            ),
+            second_month_employment=pl.col("second_month_employment").fill_null(
+                strategy="zero"
+            ),
+            third_month_employment=pl.col("third_month_employment").fill_null(
+                strategy="zero"
+            ),
+            total_wages=pl.col("total_wages").fill_null(strategy="zero"),
+        )
+        df_qcew = df_qcew.with_columns(
+            total_employment=(
+                pl.col("first_month_employment")
+                + pl.col("second_month_employment")
+                + pl.col("third_month_employment")
+            )
+            / 3
+        )
+        df_qcew = df_qcew.filter(
+            (pl.col("total_employment") != 0) & (pl.col("total_wages") != 0)
+        )
+
+        df_qcew = df_qcew.filter(
+            (pl.col("phys_addr_city") != "") & (pl.col("naics_code") != "")
+        )
+        df_qcew = df_qcew.with_columns(pl.col("phys_addr_city").str.to_lowercase())
+        df_qcew = df_qcew.group_by(["year", "qtr", "phys_addr_city"]).agg(
+            pl.col("total_employment").sum(), pl.col("total_wages").sum()
+        )
+        df_qcew = df_qcew.rename({"phys_addr_city": "name"})
+        df_qcew = df_qcew.to_pandas()
+
+        gdf = self.county_geom()
+
+        # Create a translation table to remove accents
+
+        accented_vowels = "áéíóúüñÁÉÍÓÚ"
+        unaccented_vowels = "aeiouunAEIOU"
+
+        gdf["name"] = (
+            gdf["name"]
+            .str.lower()
+            .str.translate(str.maketrans(accented_vowels, unaccented_vowels))
+        )
+
+        return gpd.GeoDataFrame(pd.merge(gdf, df_qcew, on="name"), geometry="geometry")
