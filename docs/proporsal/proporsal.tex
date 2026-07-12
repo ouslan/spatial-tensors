@@ -9,39 +9,7 @@
 \begin{document}
 
 % Cover Page
-\begin{titlepage}
-	\centering
-	\vspace*{1cm}
-
-	\includegraphics[width=0.5\textwidth]{assets/logo.png}\par\vspace{1cm} % Adjust the width as needed
-
-	\Huge
-	\textbf{Modeling Spatial Dependence: A Simulation-Based Comparison of Parametric and Semi-Parametric Approaches}
-
-	\vspace{0.5cm}
-	\LARGE
-	Master in Statistics Mathematics
-
-	\vspace{1.5cm}
-
-	\textbf{Alejandro M. Ouslan}
-
-	\vfill
-
-	\Large
-	Supervisors: \\
-	Dr. Raul E. Macchiavelli \\
-	Dra. Damaris Santana \\
-	Dr. Julio C. Hernandez \\
-	Dr. Roberto Rivera Santiago
-
-	\vspace{0.8cm}
-
-	\Large
-	University of Puerto Rico, Mayagüez \\
-	{\small \today}
-
-\end{titlepage}
+\input{sections/titlepage.tex}
 
 \newpage
 
@@ -54,18 +22,7 @@
 Spatial simulation, Spatial Regressions, GAMs, Tensor Products
 
 \section{Introduction}
-
-Economic models are commonly used to simplify and represent complex real-world relationships.
-Since all models are approximations, additional components are often introduced to better capture
-underlying patterns. Especially in micro economices where the assumption of independent and identically
-distributed (i.i.d) can not be reasonably assumed due to its time factor or close proximity making
-them influence each outer. Spatial models are not a novel concept. Through simulation,
-this research seeks to understand the limitations of various spatial models and identify contexts in
-which specific models are preferable.
-
-More specifically in this research we seek to find reasonable strategies to best specify spatial models,
-where are it can be reasonably be presumed that there is some spatial effect but there is no clear answer
-on how spatial agents relate to each other.
+\input{sections/intro.tex}
 
 
 \section{Background and Motivation}
@@ -405,98 +362,10 @@ To apply the proposed models to the Puerto Rican economy, we utilize high-freque
 The integration of these datasets provides a panel structure desegregated by municipality ($i$) and time ($t$), which is essential for the spatial and semi-parametric models described in Equations \ref{eq:SAR} and \ref{eq:tensor}.
 
 \section{Success and Impact}
-
-SDM models are highly sensitive to the choice of $W$, for which no standardized selection method exists. Often, domain expertise is required. The semi-parametric model, however, does not depend on $W$, making it potentially more robust.
-
-We will evaluate model performance using mean squared error (MSE) of predicted outcomes:
-
-\begin{equation}
-	\frac{\sum_{n=1}^N(y_n-\hat{y}_{nSDM})^2}{N}; \quad \frac{\sum_{n=1}^N(y-\hat{y}_{GAM})^2}{N}
-	\label{eq:pref}
-\end{equation}
-
-And by comparing estimated vs. true coefficients:
-
-\begin{equation}
-	\frac{\sum_{n=1}^N(\beta-\hat{\beta}_{SDM})^2}{N}; \quad \frac{\sum_{n=1}^N(\beta-\hat{\beta}_{GAM})^2}{N}
-	\label{eq:pref2}
-\end{equation}
+\input{sections/success.tex}
 
 \section{Preliminary results}
-
-In the following results are for a regar regression model specified in the following way:
-
-We consider a set of $N$ observations generated from a spatial regression
-framework.  Let $y$ denote the response vector, $X = (X_1, X_2, X_3)$ the
-explanatory variables, and $W$ a spatial weights matrix (Rook, Queen, or
-$k$-nearest neighbors with $k=6$).  The spatial Durbin model (SDM) used in the
-simulation study is given by
-\begin{equation}
-	y = \rho Wy + X\beta + \varepsilon,
-	\label{eq:sdm}
-\end{equation}
-where $\rho$ is the spatial autoregressive parameter, $\beta$ are the direct effects
-
-The error term follows
-\[
-	\varepsilon \sim \mathcal{N}(0, \sigma^2 I_N).
-\]
-
-The true parameter values in the data-generating process are
-\[
-	\beta = (4,5,6,7)^{\top}, \qquad \rho = 0.7.
-\]
-
-Looking over the results we see that the best preforming model is the Queens
-model as this is the model used to generate the data. The second best preforming
-model is the penalized tensor products. This shows that if there is no reasonable
-argument for picking the spatial weights matrix the penalized tensor products are a
-reasonable starting point for controlling for spatial variability.
-
-\begin{table}[H]
-	\centering
-	\caption{Simulation results for 1000 runs comparing spatial specifications}
-	\begin{tabular}{lcccccc}
-		\hline
-		 & \textbf{Rook} & \textbf{Queen} & \textbf{KNN (6)} & \textbf{Tensor} & \textbf{Base} \\
-		\hline
-		Intercept
-		 & 3973.28
-		 & 0.40
-		 & 92.49
-		 & 8252.62
-		 & 7177.34                                                                             \\
-
-		$X_1$
-		 & 0.74
-		 & 0.0032
-		 & 0.30
-		 & 0.21
-		 & 1.22                                                                                \\
-
-		$X_2$
-		 & 0.90
-		 & 0.0032
-		 & 0.30
-		 & 0.26
-		 & 1.57                                                                                \\
-
-		$X_3$
-		 & 1.04
-		 & 0.0031
-		 & 0.39
-		 & 0.27
-		 & 1.92                                                                                \\
-
-		$\rho$
-		 & 0.43
-		 & 0.000024
-		 & 0.0060
-		 & --
-		 & --                                                                                  \\
-		\hline
-	\end{tabular}
-\end{table}
+\input{sections/results.tex}
 
 \newpage
 

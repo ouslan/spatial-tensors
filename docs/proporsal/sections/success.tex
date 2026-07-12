@@ -1,0 +1,17 @@
+
+SDM models are highly sensitive to the choice of $W$, for which no standardized selection method exists. Often, domain expertise is required. The semi-parametric model, however, does not depend on $W$, making it potentially more robust.
+
+We will evaluate model performance using mean squared error (MSE) of predicted outcomes:
+
+\begin{equation}
+	\frac{\sum_{n=1}^N(y_n-\hat{y}_{nSDM})^2}{N}; \quad \frac{\sum_{n=1}^N(y-\hat{y}_{GAM})^2}{N}
+	\label{eq:pref}
+\end{equation}
+
+And by comparing estimated vs. true coefficients:
+
+\begin{equation}
+	\frac{\sum_{n=1}^N(\beta-\hat{\beta}_{SDM})^2}{N}; \quad \frac{\sum_{n=1}^N(\beta-\hat{\beta}_{GAM})^2}{N}
+	\label{eq:pref2}
+\end{equation}
+
