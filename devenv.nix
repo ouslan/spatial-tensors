@@ -7,25 +7,30 @@
 }:
 {
   # --- 1. Global Base Configuration ---
+  # Variables and settings that apply absolutely everywhere (Dev & Prod)
   env = {
-    PROJECT_NAME = "spatial-tensors";
+    GREET = "devenv";
   };
 
   dotenv.enable = true;
 
-  # We remove the imports = [ ./devenv ] because we are not creating a subfolder structure for now,
-  # unless it's strictly required by the pattern. The user said "derived from the template".
-  # Let's just keep it simple and put everything in devenv.nix first.
+  imports = [
+    ./devenv # Loads ./devenv/default.nix
+  ];
 
   scripts.hello.exec = ''
-    echo "Welcome to spatial-tensors development environment!"
+    echo hello from $GREET
   '';
 
   # --- 2. Profile Definitions ---
   profiles = {
+    # Development Environment Profile
     dev.module = { config, ... }: {
       env = {
         UV_SYSTEM_PYTHON = "0";
+        OCO_AI_PROVIDER = "ollama";
+        OCO_PROMPT_MODULE = "conventional-commit";
+        OCO_MODEL = "qwen2.5-coder:3b";
       };
 
       packages = with pkgs; [
@@ -34,29 +39,30 @@
         opencommit
         jupyter
         nixpkgs-fmt
-        # Adding spatial-tensors specific system deps if any were evident. 
-        # pyproject.toml has geopandas (requires gdal, proj, geos) and pysal.
-        # Normally uv handles these via wheels, but for Nix we might need them.
-        gdal
-        proj
-        geos
+        docker
+        skopeo
+        podman
+        docker-buildx
       ];
 
       enterShell = ''
-        echo "Spatial Tensors Dev Env Loaded"
-        uv sync
+        hello
+        git --version
+        export OCO_API_CUSTOM_HEADERS="{\"Authorization\": \"Bearer $OLLAMA_API_KEY\"}"
       '';
 
       enterTest = ''
-        echo "Running tests..."
-        # Add actual test command here if available (e.g., pytest)
-        uv run pytest
+        echo "Running tests"
+        git --version | grep --color=auto "${pkgs.git.version}"
       '';
     };
 
+    # Container / Production Environment Profile
     container-build.module = {
       env = {
         UV_SYSTEM_PYTHON = "1";
+        NODE_ENV = "production";
+        # Add any other production-specific environment variables here
       };
 
       packages = with pkgs; [
