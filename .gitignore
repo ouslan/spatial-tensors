@@ -26,6 +26,33 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# Latex stuff
+*.aux
+*.bbl
+*.bcg
+*.fdb_latexmk
+*.bcf
+*.fls
+*.blg
+*.xml
+*.gz
+*.out
+
+# Database files 
+*.sqlite3
+*.db
+*.sqlite
+*.ddb
+*.wal
+*.csv
+*.txt
+*.parquet
+*.zip
+*.xlsx
+
+# Exeption for requirements
+!requirements.txt
+
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
@@ -85,7 +112,7 @@ ipython_config.py
 # pyenv
 #   For a library or package, you might want to ignore these files since the code is
 #   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+.python-version
 
 # pipenv
 #   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
@@ -161,20 +188,24 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-*.csv
-docs/papers/*.pdf
+# ignore mac files
+*.DS_Store
 
-# Remove Latex stuff
-*.aux
-*.fdb_latexmk
-*.fls 
-*.out
-*.gz
-*.ddb
-*.zip
-*.json
-*.parquet
-qcew/
-*.nav
-*.snm
-*.toc
+# ignore quarter files 
+# vscode
+.vscode
+data_process.log
+docs/aux/*
+docs/out/*
+qcew
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
