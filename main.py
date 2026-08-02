@@ -1,6 +1,5 @@
-from src.data.data_reg import SpatialReg
+from st_repl import SpatialReg
 import json
-
 
 sr = SpatialReg()
 

@@ -1,5 +1,7 @@
 import logging
+import os
 from pathlib import Path
+import hashlib
 import tempfile
 
 import duckdb
@@ -14,7 +16,6 @@ class DataPull:
     def __init__(
         self,
         saving_dir: str = "data/",
-        database_file: str = "data.ddb",
         log_file: str = "data_process.log",
     ):
         logging.basicConfig(
@@ -23,20 +24,26 @@ class DataPull:
             datefmt="%d-%b-%y %H:%M:%S",
             filename=log_file,
         )
-        self.saving_dir = saving_dir
-        self.data_file = database_file
+        self.saving_dir = Path(saving_dir)
         self.conn = duckdb.connect()
 
     def county_geom(self) -> gpd.GeoDataFrame:
-        file_path = Path(f"{self.saving_dir}external/geo-county.parquet")
+        output_dir = self.saving_dir / "external"
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        file_path = output_dir / "geo-county.parquet"
+
+        name_hash = hashlib.md5(str(file_path).encode()).hexdigest()
+        temp_zip = Path(tempfile.gettempdir()) / f"{name_hash}.zip"
+
         if not file_path.exists():
             download(
                 url="https://www2.census.gov/geo/tiger/TIGER2025/COUNTY/tl_2025_us_county.zip",
-                filename=f"{tempfile.gettempdir()}/{hash(file_path)}.zip",
+                filename=str(temp_zip),
             )
 
             # Process shape
-            gdf = gpd.read_file(f"{tempfile.gettempdir()}/{hash(file_path)}.zip")
+            gdf = gpd.read_file(temp_zip)
             gdf = gdf.rename(
                 columns={
                     "STATEFP": "statefip",
@@ -50,11 +57,18 @@ class DataPull:
         return gpd.read_parquet(path=file_path)
 
     def zips_goem(self) -> gpd.GeoDataFrame:
-        file_path = Path(f"{self.saving_dir}external/geo-zips.parquet")
+        output_dir = self.saving_dir / "external"
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        file_path = output_dir / "geo-zips.parquet"
+
+        name_hash = hashlib.md5(str(file_path).encode()).hexdigest()
+        temp_zip = Path(tempfile.gettempdir()) / f"{name_hash}.zip"
+
         if not file_path.exists():
             download(
                 url="https://www2.census.gov/geo/tiger/TIGER2024/ZCTA520/tl_2024_us_zcta520.zip",
-                filename=f"{tempfile.gettempdir()}/{hash(file_path)}.zip",
+                filename=str(temp_zip),
             )
 
             # Process and insert the shape files
@@ -69,7 +83,7 @@ class DataPull:
             )
         return gpd.read_parquet(path=file_path)
 
-    def pull_abscs(self) -> pl.DataFrame:
+    def pull_acs(self) -> pl.DataFrame:
         for _year in range(2011, 2024):
             file_path = Path(f"{self.saving_dir}raw/abscs-{_year}.parquet")
 
@@ -78,7 +92,7 @@ class DataPull:
             else:
 
                 logging.info(f"pulling {_year} data")
-                data = CensusAPI().query(
+                data = CensusAPI(str(os.getenv("CENSUS_KEY"))).query(
                     dataset="acs-acs5-profile",
                     year=_year,
                     params_list=[],
@@ -94,7 +108,7 @@ class DataPull:
                 continue
             else:
                 logging.info(f"pulling {_year} data")
-                data = CensusAPI().query(
+                data = CensusAPI(str(os.getenv("CENSUS_KEY"))).query(
                     dataset="acs-acs5-profile",
                     year=_year,
                     params_list=[
