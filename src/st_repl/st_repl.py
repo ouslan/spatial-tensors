@@ -41,11 +41,16 @@ class SpatialReg(DataPull):
         self, alpha: int, beta: int, sigma: int, rho: float, seed: int
     ) -> gpd.GeoDataFrame:
 
-        gdf = self.quasi_data().sort_values(["year", "qtr", "name"]).to_crs("EPSG:3395")
+        gdf = (
+            self.quasi_data()
+            .sort_values(["year", "qtr", "name"])
+            .to_crs("EPSG:3395")
+            .reset_index(drop=True)
+        )
 
         all_slices = []
 
-        for year in range(2002, 2023):
+        for year in range(2010, 2017):
             for qtr in range(1, 5):
 
                 rng_global = np.random.default_rng(seed=seed + (year * 10 + qtr))
@@ -101,7 +106,7 @@ class SpatialReg(DataPull):
         )
         for time_period in range(0, time):
             # Remove columns with all NA values from gdf and tmp
-            tmp = self.spatial_data(mu=2, sigma=3, rho=rho, time=time_period, seed=seed)
+            tmp = self.spatial_data(alpha=1, beta=2, sigma=3, rho=rho, seed=seed)
             tmp = tmp.dropna(axis=1, how="all")
 
             gdf = pd.concat([gdf, tmp]).reset_index(drop=True)
@@ -512,9 +517,9 @@ class SpatialReg(DataPull):
         return spatial_lag
 
     def quasi_data(self) -> gpd.GeoDataFrame:
-        data_path = Path(f"{self.saving_dir}processed/pr-qcew-2024-2.parquet")
+        data_path = self.saving_dir / "processed" / "qcew" / "2024" / "data-2.parquet"
         if not data_path.exists():
-            CleanQCEW(self.saving_dir).make_qcew_dataset()
+            CleanQCEW().make_qcew_dataset()
 
         df_qcew = self.conn.execute(f"""
                     SELECT
@@ -530,7 +535,7 @@ class SpatialReg(DataPull):
                         second_month_employment,
                         third_month_employment,
                         naics_code
-                    FROM '{self.saving_dir}processed/pr-qcew-*.parquet';
+                    FROM '{self.saving_dir}/processed/qcew/**/data-*.parquet';
                     """).pl()
         df_qcew = df_qcew.with_columns(
             first_month_employment=pl.col("first_month_employment").fill_null(
