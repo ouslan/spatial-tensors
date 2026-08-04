@@ -10,6 +10,7 @@ import pymc as pm
 import statsmodels.api as sm
 from libpysal import weights
 from patsy import dmatrix
+from shapely.geometry import box
 from sklearn.linear_model import Ridge
 from spreg import dgp_lag
 
@@ -40,49 +41,123 @@ class SpatialReg(DataPull):
     def spatial_data(
         self, alpha: int, beta: int, sigma: int, rho: float, seed: int
     ) -> gpd.GeoDataFrame:
+        # 1. Create a purely synthetic base spatial grid (e.g., 20x20 grid = 400 regions)
+        n_rows, n_cols = 20, 20
+        polygons = []
+        names = []
 
-        gdf = (
-            self.quasi_data()
-            .sort_values(["year", "qtr", "name"])
-            .to_crs("EPSG:3395")
-            .reset_index(drop=True)
+        for r in range(n_rows):
+            for c in range(n_cols):
+                xmin, ymin = c * 1000.0, r * 1000.0
+                xmax, ymax = (c + 1) * 1000.0, (r + 1) * 1000.0
+                polygons.append(box(xmin, ymin, xmax, ymax))
+                names.append(f"Region_{r}_{c}")
+
+        base_gdf = gpd.GeoDataFrame(
+            {"name": names, "geometry": polygons}, crs="EPSG:3395"
         )
+
+        # Build standard spatial weights matrices
+        wr = weights.Rook.from_dataframe(base_gdf)
+        wq = weights.Queen.from_dataframe(base_gdf)
+        wk6 = weights.KNN.from_dataframe(base_gdf, k=min(6, len(base_gdf) - 1))
+
+        # Construct custom weights dictionary allowing unequal/weighted relationships
+        neighborhood = {}
+        weights_vals = {}
+
+        for r in range(n_rows):
+            for c in range(n_cols):
+                idx = r * n_cols + c
+                # Start with standard Queen neighbors, assigning default weight 1.0
+                neighbors_list = list(wq.neighbors[idx])
+                val_list = [1.0] * len(neighbors_list)
+
+                # EXAMPLE: Make 'Region_0_0' (idx 0) have an exceptionally high relationship
+                # with specific distant units (e.g., center or corner units), while others don't relate much.
+                if idx == 100:
+                    target_heavy_nodes = [
+                        105,
+                        210,
+                        315,
+                    ]  # Arbitrary distant units in the grid
+                    for node in target_heavy_nodes:
+                        if node not in neighbors_list:
+                            neighbors_list.append(node)
+                            val_list.append(
+                                25.0
+                            )  # Much higher relationship strength
+                        else:
+                            # If it happened to be a queen neighbor, boost its weight value
+                            pos = neighbors_list.index(node)
+                            val_list[pos] = 25.0
+
+                neighborhood[idx] = neighbors_list
+                weights_vals[idx] = val_list
+
+        # Create PySAL W weights object with custom continuous/weighted values
+        w_custom_weighted = weights.W(neighborhood, weights=weights_vals)
+        # Optional: use 'ascent' or keep raw depending on standardization requirements.
+        # w_custom_weighted.transform = 'r' # Row-standardizes if needed
 
         all_slices = []
 
-        for year in range(2010, 2017):
+        for year in range(1, 5):
             for qtr in range(1, 5):
 
                 rng_global = np.random.default_rng(seed=seed + (year * 10 + qtr))
 
-                slice_df = gdf[(gdf["year"] == year) & (gdf["qtr"] == qtr)].reset_index(
-                    drop=True
-                )
-
-                X = slice_df[["total_employment", "total_wages"]].values
-                X = sm.add_constant(X)
-
+                # Copy base geometry and names for the current time slice
+                slice_df = base_gdf.copy()
+                slice_df["year"] = year
+                slice_df["qtr"] = qtr
                 n_obs = len(slice_df)
 
+                # -------------------------------------------------------------
+                # 2. Generate purely synthetic features X (Log-Normal distribution)
+                # -------------------------------------------------------------
+                mu = np.array([10.0, 11.0])
+                cov = np.array([[0.5, 0.3], [0.3, 0.6]])
+
+                sampled_log_x = rng_global.multivariate_normal(
+                    mean=mu, cov=cov, size=n_obs
+                )
+                sampled_x = np.exp(sampled_log_x)
+
+                slice_df["total_employment"] = sampled_x[:, 0]
+                slice_df["total_wages"] = sampled_x[:, 1]
+
+                # -------------------------------------------------------------
+                # 3. Compute Linear Predictor & Data Generating Process (DGP)
+                # -------------------------------------------------------------
+                X = sm.add_constant(sampled_x)
                 coef = np.array([200, alpha, beta])
                 xb = (X @ coef).reshape(-1, 1)
 
                 u = rng_global.normal(loc=0, scale=sigma, size=n_obs).reshape(-1, 1)
 
-                y_true = dgp_lag(u, xb, self.wq, rho=rho, imethod="true_inv")
+                y_true = dgp_lag(u, xb, wq, rho=rho, imethod="true_inv")
 
+                # -------------------------------------------------------------
+                # 4. Add Spatial Lag Features and Spatial Geometries
+                # -------------------------------------------------------------
                 slice_df["y_true"] = y_true
                 slice_df["centroid"] = slice_df.geometry.centroid
                 slice_df["lat"] = slice_df["centroid"].y
                 slice_df["lon"] = slice_df["centroid"].x
 
-                slice_df["w_rook"] = weights.lag_spatial(self.wr, y_true)
-                slice_df["w_queen"] = weights.lag_spatial(self.wq, y_true)
-                slice_df["w_knn6"] = weights.lag_spatial(self.wk6, y_true)
+                slice_df["w_rook"] = weights.lag_spatial(wr, y_true)
+                slice_df["w_queen"] = weights.lag_spatial(wq, y_true)
+                slice_df["w_custom_weighted"] = weights.lag_spatial(
+                    w_custom_weighted, y_true
+                )
+                slice_df["w_knn6"] = weights.lag_spatial(wk6, y_true)
 
-                all_slices.append(slice_df)  # ✅ append here
+                all_slices.append(slice_df)
 
-        master = gpd.GeoDataFrame(pd.concat(all_slices, ignore_index=True), crs=gdf.crs)
+        master = gpd.GeoDataFrame(
+            pd.concat(all_slices, ignore_index=True), crs="EPSG:3395"
+        )
 
         return master
 
