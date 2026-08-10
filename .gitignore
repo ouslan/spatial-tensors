@@ -29,10 +29,10 @@ MANIFEST
 
 # Latex stuff
 *.aux
-*.bbl
+*.bbl*
 *.bcg
 *.fdb_latexmk
-*.bcf
+*.bcf*
 *.fls
 *.blg
 *.xml
