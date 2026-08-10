@@ -1,21 +1,18 @@
 import logging
 from pathlib import Path
-import hashlib
-import tempfile
 
 import geopandas as gpd
 import numpy as np
 import pandas as pd
 import polars as pl
-import pymc as pd_pm  # keeping standard names or aliases clear
 import pymc as pm
 import statsmodels.api as sm
 from libpysal import weights
 from patsy import dmatrix
+from shapely.geometry import box
 from sklearn.linear_model import Ridge
 from spreg import dgp_lag
 from jp_qcew import CleanQCEW
-from jp_tools import download
 
 from .data_pull import DataPull
 
@@ -25,12 +22,16 @@ class SpatialReg(DataPull):
         self,
         saving_dir: str = "data/",
         log_file: str = "data_process.log",
+        grid_x: int = 10,
+        grid_y: int = 10,
     ):
         super().__init__(saving_dir, log_file)
+        self.grid_x = grid_x
+        self.grid_y = grid_y
 
         spatial_df = self.spatial_df()
 
-        # Define spatial weight matrices
+        # Define spatial weight matrices using the synthetic grid
         self.wr = weights.contiguity.Rook.from_dataframe(spatial_df, use_index=False)
 
         self.wq = weights.contiguity.Queen.from_dataframe(spatial_df, use_index=False)
@@ -38,6 +39,30 @@ class SpatialReg(DataPull):
 
         self.wk6 = weights.KNN.from_dataframe(spatial_df, k=6, use_index=False)
         self.wk6.transform = "r"
+
+    def make_spatial_table(self) -> gpd.GeoDataFrame:
+        """Generates a synthetic regular polygon grid (GeoDataFrame) instead of loading a parquet file."""
+        polygons = []
+        ids = []
+
+        id_counter = 0
+        for x in range(self.grid_x):
+            for y in range(self.grid_y):
+                # Create a square polygon cell of size 1x1
+                polygons.append(box(x, y, x + 1, y + 1))
+                ids.append(f"{id_counter:04d}")
+                id_counter += 1
+
+        grid_gdf = gpd.GeoDataFrame(
+            {"zipcode": ids, "geometry": polygons}, crs="EPSG:3395"
+        )
+        return grid_gdf
+
+    def spatial_df(self) -> gpd.GeoDataFrame:
+        gdf = self.make_spatial_table()
+        return gdf.to_crs("EPSG:3395").assign(
+            zipcode=lambda x: x["zipcode"].astype(str)
+        )
 
     def spatial_data(
         self, mu: int, sigma: int, rho: float, time: int, seed: int
@@ -85,19 +110,6 @@ class SpatialReg(DataPull):
         self, time: int, rho: float, simulations: int, start_seed: int
     ):
         logging.getLogger("pymc").setLevel(logging.WARNING)
-
-        col_names = [
-            f"{model}_{var}"
-            for model in [
-                "freq_rook",
-                "freq_queen",
-                "freq_knn6",
-                "freq_base",
-                "freq_tensor",
-            ]
-            for var in ["X_1", "X_2", "X_3", "rho", "intercept"]
-            if not (model == "freq_tensor" and var == "rho")
-        ] + ["simulknations_id"]
 
         sim_records = []
 
@@ -238,30 +250,86 @@ class SpatialReg(DataPull):
 
         return gpd.GeoDataFrame(pd.merge(gdf, df_qcew, on="name"), geometry="geometry")
 
-    def spatial_df(self) -> gpd.GeoDataFrame:
-        gdf = gpd.GeoDataFrame(self.make_spatial_table())
-        return gdf.to_crs("EPSG:3395").assign(
-            zipcode=lambda x: x["zipcode"].astype(str)
+    def quasi_panel(
+        self, alpha: int, beta: int, sigma: int, rho: float, seed: int
+    ) -> gpd.GeoDataFrame:
+
+        gdf = (
+            self.quasi_data()
+            .sort_values(["year", "qtr", "name"])
+            .to_crs("EPSG:3395")
+            .reset_index(drop=True)
         )
 
-    def make_spatial_table(self) -> pd.DataFrame:
-        file_path = self.saving_dir / "external" / "geo-zips.parquet"
-        if not file_path.exists():
-            name_hash = hashlib.md5(str(file_path).encode()).hexdigest()
-            temp_zip = Path(tempfile.gettempdir()) / f"census_zip_{name_hash}.zip"
+        all_slices = []
 
-            download(
-                url="https://www2.census.gov/geo/tiger/TIGER2024/ZCTA520/tl_2024_us_zcta520.zip",
-                filename=temp_zip,
+        for year in range(2010, 2017):
+            for qtr in range(1, 5):
+
+                slice_df = gdf[(gdf["year"] == year) & (gdf["qtr"] == qtr)].reset_index(
+                    drop=True
+                )
+
+                # Skip empty slices
+                if (
+                    len(slice_df) < 2
+                ):  # Most spatial weight methods require at least 2 observations
+                    continue
+
+                rng_global = np.random.default_rng(seed=seed + (year * 10 + qtr))
+
+                # Create slice-specific weight matrices
+                try:
+                    wr_slice = weights.contiguity.Rook.from_dataframe(
+                        slice_df, use_index=False
+                    )
+                    wq_slice = weights.contiguity.Queen.from_dataframe(
+                        slice_df, use_index=False
+                    )
+                    wq_slice.transform = "r"
+
+                    # Ensure KNN k doesn't exceed available observations minus 1
+                    k_val = min(6, len(slice_df) - 1)
+                    wk6_slice = weights.KNN.from_dataframe(
+                        slice_df, k=k_val, use_index=False
+                    )
+                    wk6_slice.transform = "r"
+                except Exception:
+                    # Skip if topology generation fails for disconnected/tiny slices
+                    continue
+
+                X = slice_df[["total_employment", "total_wages"]].values
+                X = sm.add_constant(X)
+
+                n_obs = len(slice_df)
+
+                coef = np.array([200, alpha])
+                xb = (X[:, :2] @ coef).reshape(-1, 1)
+
+                u = rng_global.normal(loc=0, scale=sigma, size=n_obs).reshape(-1, 1)
+
+                # Generate spatial lag using the slice's queen weights
+                y_true = dgp_lag(u, xb, wq_slice, rho=rho, imethod="true_inv")
+
+                if y_true is None:
+                    continue
+
+                slice_df["y_true"] = y_true
+                slice_df["centroid"] = slice_df.geometry.centroid
+                slice_df["lat"] = slice_df["centroid"].y
+                slice_df["lon"] = slice_df["centroid"].x
+
+                slice_df["w_rook"] = weights.lag_spatial(wr_slice, y_true)
+                slice_df["w_queen"] = weights.lag_spatial(wq_slice, y_true)
+                slice_df["w_knn6"] = weights.lag_spatial(wk6_slice, y_true)
+
+                all_slices.append(slice_df)
+
+        if not all_slices:
+            raise ValueError(
+                "No data slices were processed. Check your filters and dataset."
             )
-            logging.info("Downloaded zipcode shape files")
 
-            gdf = gpd.read_file(f"{self.saving_dir}external/zips_shape.zip")
-            gdf = gdf[gdf["ZCTA5CE20"].str.startswith("00")].rename(
-                columns={"ZCTA5CE20": "zipcode"}
-            )
-            gdf[["zipcode", "geometry"]].assign(
-                zipcode=lambda x: x["zipcode"].str.strip()
-            ).to_parquet(file_path)
+        master = gpd.GeoDataFrame(pd.concat(all_slices, ignore_index=True), crs=gdf.crs)
 
-        return gpd.read_parquet(file_path)
+        return master
