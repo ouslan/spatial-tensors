@@ -1,0 +1,186 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --------------------------------------------------------
+%  _____           
+% |_   _|_ _ _   _ 
+%   | |/ _` | | | |
+%   | | (_| | |_| |
+%   |_|\__,_|\__,_|
+%
+% LaTeX2e Template
+% Version 2.6.0 (21/04/2026)
+%
+% Author: 
+% Guillermo Jimenez (memo.notess1@gmail.com)
+% 
+% License:
+% Creative Commons CC BY 4.0
+% --------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% --------------------------------------------------------
+% Github Repository:
+% https://github.com/MemoJimenez/Tau-class
+% --------------------------------------------------------
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[9pt,a4paper,twocolumn,twoside]{tau-class/tau}
+\usepackage[english]{babel}
+
+% Spanish babel recomendation
+% \usepackage[spanish,es-nodecimaldot,es-noindentfirst]{babel} 
+
+%----------------------------------------------------------
+% Title & Authors/Affiliations
+%----------------------------------------------------------
+
+\doctype{Documentation Template}
+\title{Writing a lab report or research article with tau-class}
+
+%----------------------------------------------------------
+
+\author[a,1]{Author One\thanks{\href{mailto:author.one@institute.org}{author.one@institute.org} (A. One)}}
+\author[b,2]{Author Two}
+\author[c,3]{Author Three}
+
+%----------------------------------------------------------
+
+\affil[a]{Affiliation One}
+\affil[b]{Affiliation Two}
+\affil[c]{Affiliation Three}
+
+%----------------------------------------------------------
+% Document-, Footer- information
+%----------------------------------------------------------
+
+\dates{This manuscript was compiled on \today}
+
+\docinfo{This document class was prepared on Overleaf and compiled with pdf\LaTeX{}. No errors were found during the compilation process. Tau-class supports external editors, though additional setup may be required.} 
+
+%----------------------------------------------------------
+
+\footinfo{Tau-class (v.2.6)}
+\theday{\today}
+\organization{LaTeX Template}
+\leadauthor{A. One et al.}
+
+%----------------------------------------------------------
+% Abstract and Keywords
+%----------------------------------------------------------
+
+\begin{abstract}    
+    Tau-class was designed for creating professional \LaTeX{} documents, including research articles, technical reports, and academic documentation. It enhances the writing experience through intuitive custom environments, multilingual support, and refined typography. The class integrates Fira Sans for headings and highlighted elements, Fira Mono for code listings, and STIX2 for body text, ensuring consistent styling across tables, figures, equations, listings, and captions. \textit{New or updated features are marked with an asterisk (*)}.
+\end{abstract}
+
+%----------------------------------------------------------
+
+\keywords{tau-class, research article, lab report, academic writing}
+
+%----------------------------------------------------------
+
+\begin{document}
+		
+    \maketitle 
+    \thispagestyle{firststyle}
+    
+%----------------------------------------------------------
+
+
+\input{sections/01-tau-class.tex}
+\input{sections/02_document_styling.tex}
+\input{sections/03-.tex}
+\input{sections/04.tex}
+\input{sections/05.tex}
+\input{sections/06.tex}
+\input{sections/07.tex}
+\input{sections/08.tex}
+\input{sections/09.tex}
+\input{sections/10.tex}
+
+
+    \subsection*{What should I do with the example files?}
+    \addcontentsline{toc}{subsection}{What should I do with the example files?}
+
+        The template includes sample content — such as an example figure, bibliography entries, and the \inlinecode{example.py} script — to demonstrate how the layout and features work. Once you start customizing the document for your own use, feel free to delete all example files and entries you don’t need.
+
+    \subsection*{How do I place equations easily?}
+    \addcontentsline{toc}{subsection}{How do I place equations easily?}
+
+        For equations, we have two options: inline or on its own line. For inline equations, simply place a dollar sign (\$) at the beginning and end of the equation. However, if you want the equation to be displayed on its own line, you need to use the equation environment.
+        
+        If you find it challenging to write formulas directly in \LaTeX, you can use text editors like Word. In the equations menu, you can select \LaTeX\ in the conversion section and copy and paste the equation you wrote into one of these two environments.
+
+    \subsection*{How do I change the paper size?}
+    \addcontentsline{toc}{subsection}{How do I change the paper size?}
+
+        By default, this class was adapted for a4paper and test it with letterpaper. The following paper sizes are available in \LaTeX:
+
+        \begin{itemize}
+            \item letterpaper (11 $\times$ 8.5 in)
+            \item legalpaper (14 $\times$ 8.5 in)
+            \item executivepaper (10.5 $\times$ 7.25 in)
+            \item a4paper (21 $\times$ 29.7 cm)
+            \item a5paper (21 $\times$ 14.8 cm)
+            \item b5paper (25 $\times$ 17.6 cm)
+       \end{itemize}
+
+\section*{Contact me}
+\addcontentsline{toc}{section}{Contact me}
+    
+    Have questions, suggestions, or an idea for a new feature? Found a bug or working on a project you’d like to invite me to?  
+    
+    Feel free to reach out — I’d be happy to help, collaborate, or fix the issue.  Your feedback helps me improve my templates!
+
+    \AtBeginEnvironment{tabular}{\normalsize\sffamily\selectfont}
+    \begin{center}
+        \setlength{\tabcolsep}{3pt}
+        \begin{tabular}{cl}
+            \faEnvelope & \href{mailto:memo.notess1@gmail.com}{memo.notess1@gmail.com} \\
+            \faGlobe{} & \href{https://memonotess1.wixsite.com/memonotess}{memonotess.com} \\
+            \faInstagram{} & \href{https://www.instagram.com/memo.notess/}{@memo.notess}
+        \end{tabular}
+    \end{center}
+
+\section*{Github Repository}
+\addcontentsline{toc}{section}{Github Repository}
+
+    Visit the repository to access the source code, track ongoing development, report issues, and stay up to date with the latest changes.
+
+    \begin{center}
+        \setlength{\tabcolsep}{3pt}
+        \begin{tabular}{cl}
+             \faGithub &  \url{https://github.com/MemoJimenez/Tau-class}\\
+        \end{tabular}
+    \end{center}
+
+\section*{Supporting}
+\addcontentsline{toc}{section}{Supporting}
+
+    Did you like this class document? Check out rho-class, made for complex research articles.
+
+    \begin{center}
+        \setlength{\tabcolsep}{3pt}
+        \begin{tabular}{cl}
+             \faLink &  \href{https://www.overleaf.com/latex/templates/rho-class-research-article-template/bpgjxjjqhtfy}{https://es.overleaf.com/latex/templates/rho-class}\\
+        \end{tabular}
+    \end{center}
+    
+    \subsection*{Any contributions are welcome!}
+    \addcontentsline{toc}{subsection}{Any contributions are welcome!}
+    
+        Coffee keeps me awake and helps me create better \LaTeX\ templates. If you wish to support my work, you can do so through PayPal: 
+
+        \begin{center}
+            \setlength{\tabcolsep}{3pt}
+            \begin{tabular}{cl}
+                 \faPaypal & \textbf{\url{https://www.paypal.me/GuillermoJimeenez}}\\
+            \end{tabular}
+            \vskip9pt
+            Enjoy writing with tau-class!
+        \end{center}
+
+%----------------------------------------------------------
+
+\printbibliography
+
+%----------------------------------------------------------
+
+\end{document}
