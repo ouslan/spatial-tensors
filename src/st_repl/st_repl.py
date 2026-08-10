@@ -99,9 +99,9 @@ class SpatialReg(DataPull):
 
         return gdf.dropna(axis=1, how="all")
 
-    def spatial_panel(self, time: int, rho: float, seed: int) -> pd.DataFrame:
+    def spatial_panel(self, mu:int, time: int, rho: float, sigma:float, seed: int) -> pd.DataFrame:
         panels = [
-            self.spatial_data(mu=2, sigma=3, rho=rho, time=t, seed=seed + t)
+            self.spatial_data(mu=mu, sigma=sigma, rho=rho, time=t, seed=seed + t)
             for t in range(time)
         ]
         return pd.concat(panels, ignore_index=True)

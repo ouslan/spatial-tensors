@@ -1,0 +1,32 @@
+
+\section{Spatial Data}
+
+    \taustart{S}patial data can be easily generated using a simple 
+    grid. For the purposes of comparing how spatial smoothers 
+    behaves we will ganarte a small squire grid of $10 \times 10$.
+    The following figure shows the grid used for this simulation. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.4\textwidth]{figures/zip_grid_map.png}
+  \label{zip_grid}
+	\caption{Simulated Zipcode Grid Map}
+\end{figure}
+
+
+As this not a single point in time, we look how this each spatial agent 
+behaves thought space. This this we will generate a balance panel dataset \cite{chamberlain1984panel}
+
+
+This simulated will be generate an outcome variable that it distributse from a normal distributions 
+were the data is infunced spatialy by its neoughrs. This can be summerized with the follwoign model 
+
+\begin{equation}
+  \begin{split}
+    Y &\sim N(\alpha + \beta_1X_1 + \beta_2X_2 + \rho W Y) \\
+    X_i &\sim N(2,3), \quad \text{ For } 1,2,3
+  \end{split}
+  \label{eq:simple_sar}
+\end{equation}
+
+
