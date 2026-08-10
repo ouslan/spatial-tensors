@@ -4,7 +4,10 @@ from pathlib import Path
 import geopandas as gpd
 import numpy as np
 from jp_qcew import CleanQCEW
+import hashlib
 import pandas as pd
+import os
+import tempfile
 import polars as pl
 import pymc as pm
 import statsmodels.api as sm
@@ -12,6 +15,7 @@ from libpysal import weights
 from patsy import dmatrix
 from shapely.geometry import box
 from sklearn.linear_model import Ridge
+from jp_tools import download
 from spreg import dgp_lag
 
 from .data_pull import DataPull
@@ -27,139 +31,61 @@ class SpatialReg(DataPull):
 
         # Define the spatial weight matrix
         self.wr = weights.contiguity.Rook.from_dataframe(
-            self.county_geom(), use_index=False
+            self.spatial_df(), use_index=False
         )
 
         self.wq = weights.contiguity.Queen.from_dataframe(
-            self.county_geom(), use_index=False
+            self.spatial_df(), use_index=False
         )
         self.wq.transform = "r"
 
-        self.wk6 = weights.KNN.from_dataframe(self.county_geom(), k=6, use_index=False)
+        self.wk6 = weights.KNN.from_dataframe(self.spatial_df(), k=6, use_index=False)
         self.wk6.transform = "r"
 
     def spatial_data(
-        self, alpha: int, beta: int, sigma: int, rho: float, seed: int
+        self, mu: int, sigma: int, rho: float, time: int, seed: int
     ) -> gpd.GeoDataFrame:
-        # 1. Create a purely synthetic base spatial grid (e.g., 20x20 grid = 400 regions)
-        n_rows, n_cols = 20, 20
-        polygons = []
-        names = []
+        rng_global = np.random.default_rng(seed=seed)
+        # Number of observations
+        gdf = self.spatial_df()
+        n_obs = len(gdf)
 
-        for r in range(n_rows):
-            for c in range(n_cols):
-                xmin, ymin = c * 1000.0, r * 1000.0
-                xmax, ymax = (c + 1) * 1000.0, (r + 1) * 1000.0
-                polygons.append(box(xmin, ymin, xmax, ymax))
-                names.append(f"Region_{r}_{c}")
+        # Create the independent variables for 4 variables that com from a normal distribution X ~ N(mu, sigma)
+        X = np.ones((n_obs, 4))
 
-        base_gdf = gpd.GeoDataFrame(
-            {"name": names, "geometry": polygons}, crs="EPSG:3395"
-        )
+        for i in range(1, 4):
+            rng = np.random.default_rng(seed=seed + i)
+            X[:, i] = rng.normal(loc=mu, scale=sigma, size=n_obs)
 
-        # Build standard spatial weights matrices
-        wr = weights.Rook.from_dataframe(base_gdf)
-        wq = weights.Queen.from_dataframe(base_gdf)
-        wk6 = weights.KNN.from_dataframe(base_gdf, k=min(6, len(base_gdf) - 1))
+        # Define Beta coefficients
+        beta = np.array([4, 5, 6, 7])
 
-        # Construct custom weights dictionary allowing unequal/weighted relationships
-        neighborhood = {}
-        weights_vals = {}
+        # Compute XB matrix
+        xb = X @ beta
+        xb = xb.reshape(-1, 1)
 
-        for r in range(n_rows):
-            for c in range(n_cols):
-                idx = r * n_cols + c
-                # Start with standard Queen neighbors, assigning default weight 1.0
-                neighbors_list = list(wq.neighbors[idx])
-                val_list = [1.0] * len(neighbors_list)
+        u = rng_global.normal(loc=0, scale=2, size=n_obs).reshape(-1, 1)
 
-                # EXAMPLE: Make 'Region_0_0' (idx 0) have an exceptionally high relationship
-                # with specific distant units (e.g., center or corner units), while others don't relate much.
-                if idx == 100:
-                    target_heavy_nodes = [
-                        105,
-                        210,
-                        315,
-                    ]  # Arbitrary distant units in the grid
-                    for node in target_heavy_nodes:
-                        if node not in neighbors_list:
-                            neighbors_list.append(node)
-                            val_list.append(
-                                25.0
-                            )  # Much higher relationship strength
-                        else:
-                            # If it happened to be a queen neighbor, boost its weight value
-                            pos = neighbors_list.index(node)
-                            val_list[pos] = 25.0
+        # calculate the spatial lag
+        y_true = dgp_lag(u, xb, self.wq, rho=rho)
 
-                neighborhood[idx] = neighbors_list
-                weights_vals[idx] = val_list
+        gdf["y_true"] = y_true
 
-        # Create PySAL W weights object with custom continuous/weighted values
-        w_custom_weighted = weights.W(neighborhood, weights=weights_vals)
-        # Optional: use 'ascent' or keep raw depending on standardization requirements.
-        # w_custom_weighted.transform = 'r' # Row-standardizes if needed
+        # pre calculate the spatial lag and apply them
+        gdf["X_1"] = X[:, 1]
+        gdf["X_2"] = X[:, 2]
+        gdf["X_3"] = X[:, 3]
+        gdf["centroid"] = gdf.centroid
+        gdf["lat"] = gdf["centroid"].x
+        gdf["lat"] = pd.to_numeric(gdf["lat"], errors="coerce")
+        gdf["lon"] = gdf["centroid"].y
+        gdf["lon"] = pd.to_numeric(gdf["lon"], errors="coerce")
+        gdf["w_rook"] = weights.lag_spatial(self.wr, y_true)
+        gdf["w_queen"] = weights.lag_spatial(self.wq, y_true)
+        gdf["w_knn6"] = weights.lag_spatial(self.wk6, y_true)
+        gdf["time"] = time
 
-        all_slices = []
-
-        for year in range(1, 5):
-            for qtr in range(1, 5):
-
-                rng_global = np.random.default_rng(seed=seed + (year * 10 + qtr))
-
-                # Copy base geometry and names for the current time slice
-                slice_df = base_gdf.copy()
-                slice_df["year"] = year
-                slice_df["qtr"] = qtr
-                n_obs = len(slice_df)
-
-                # -------------------------------------------------------------
-                # 2. Generate purely synthetic features X (Log-Normal distribution)
-                # -------------------------------------------------------------
-                mu = np.array([10.0, 11.0])
-                cov = np.array([[0.5, 0.3], [0.3, 0.6]])
-
-                sampled_log_x = rng_global.multivariate_normal(
-                    mean=mu, cov=cov, size=n_obs
-                )
-                sampled_x = np.exp(sampled_log_x)
-
-                slice_df["total_employment"] = sampled_x[:, 0]
-                slice_df["total_wages"] = sampled_x[:, 1]
-
-                # -------------------------------------------------------------
-                # 3. Compute Linear Predictor & Data Generating Process (DGP)
-                # -------------------------------------------------------------
-                X = sm.add_constant(sampled_x)
-                coef = np.array([200, alpha, beta])
-                xb = (X @ coef).reshape(-1, 1)
-
-                u = rng_global.normal(loc=0, scale=sigma, size=n_obs).reshape(-1, 1)
-
-                y_true = dgp_lag(u, xb, wq, rho=rho, imethod="true_inv")
-
-                # -------------------------------------------------------------
-                # 4. Add Spatial Lag Features and Spatial Geometries
-                # -------------------------------------------------------------
-                slice_df["y_true"] = y_true
-                slice_df["centroid"] = slice_df.geometry.centroid
-                slice_df["lat"] = slice_df["centroid"].y
-                slice_df["lon"] = slice_df["centroid"].x
-
-                slice_df["w_rook"] = weights.lag_spatial(wr, y_true)
-                slice_df["w_queen"] = weights.lag_spatial(wq, y_true)
-                slice_df["w_custom_weighted"] = weights.lag_spatial(
-                    w_custom_weighted, y_true
-                )
-                slice_df["w_knn6"] = weights.lag_spatial(wk6, y_true)
-
-                all_slices.append(slice_df)
-
-        master = gpd.GeoDataFrame(
-            pd.concat(all_slices, ignore_index=True), crs="EPSG:3395"
-        )
-
-        return master
+        return gdf
 
     def spatial_panel(self, time, rho, seed):
         gdf = gpd.GeoDataFrame(
@@ -181,7 +107,7 @@ class SpatialReg(DataPull):
         )
         for time_period in range(0, time):
             # Remove columns with all NA values from gdf and tmp
-            tmp = self.spatial_data(alpha=1, beta=2, sigma=3, rho=rho, seed=seed)
+            tmp = self.spatial_data(mu=2, sigma=3, rho=rho, time=time_period, seed=seed)
             tmp = tmp.dropna(axis=1, how="all")
 
             gdf = pd.concat([gdf, tmp]).reset_index(drop=True)
@@ -660,3 +586,33 @@ class SpatialReg(DataPull):
         )
 
         return gpd.GeoDataFrame(pd.merge(gdf, df_qcew, on="name"), geometry="geometry")
+
+    def spatial_df(self) -> gpd.GeoDataFrame:
+        gdf = gpd.GeoDataFrame(self.make_spatial_table())
+        gdf = gdf.to_crs("EPSG:3395")
+        gdf["zipcode"] = gdf["zipcode"].astype(str)
+        return gdf
+
+    def make_spatial_table(self) -> pd.DataFrame:
+        # initiiate the database tables
+        file_path = self.saving_dir / "external" / "geo-zips.parquet"
+        name_hash = hashlib.md5(str(file_path).encode()).hexdigest()
+        temp_zip = Path(tempfile.gettempdir()) / f"census_zip_{name_hash}.zip"
+        if not file_path.exists():
+            # Download the shape files
+           
+            download(
+                    url="https://www2.census.gov/geo/tiger/TIGER2024/ZCTA520/tl_2024_us_zcta520.zip",
+                    filename=temp_zip,
+                )
+            logging.info("Downloaded zipcode shape files")
+
+            # Process and insert the shape files
+            gdf = gpd.read_file(f"{self.saving_dir}external/zips_shape.zip")
+            gdf = gdf[gdf["ZCTA5CE20"].str.startswith("00")]
+            gdf = gdf.rename(columns={"ZCTA5CE20": "zipcode"}).reset_index()
+            gdf = gdf[["zipcode", "geometry"]]
+            gdf["zipcode"] = gdf["zipcode"].str.strip()
+            gdf.to_parquet(file_path)
+
+        return gpd.read_parquet(file_path)
