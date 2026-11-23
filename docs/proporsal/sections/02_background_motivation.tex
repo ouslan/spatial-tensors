@@ -43,7 +43,7 @@ This can be done in the following format:
 
 \subsection{Spatial Modeling}
 
-Turning the Cobb-Douglas into a stochastic model that follows the conventual linear regression gives access
+Turning the Cobb-Douglas into a stochastic model that follows the conventional linear regression gives access
 to the ability to introduce space into the model. However it is important to define space in this context \cite{paelinck1979spatial}.
 Spatial regression models are relatively simple yet expressive tools. The Spatial Durbin Model (SDM) can be expressed as \cite{anselin1998spatial}:
 
@@ -114,7 +114,7 @@ appropriate one. In practice, $W$ is unknown and selecting it remains a major mo
 
 \subsection{spatial Cobb-Douglas}
 
-To introduce space into the Cobb-Douglas we tu turn the model into panel. This is can be done building
+To introduce space into the Cobb-Douglas we turn the model into panel. This is can be done building
 from what Wang and Henderson showed \cite{wang2022estimation}:
 \begin{equation}
 	y_{it} = \mu_i + \gamma_t + \alpha k_{it} + \beta l_{it} + \epsilon_{it}
@@ -144,8 +144,8 @@ previos section we can add the spatial component to the Cobb-Douglas function an
 	Y_{it} = A_{it} K^\alpha_{it} L^\beta_{it} \prod_{j=1}^N Y_{it}^{\rho w_{ij}}
 \end{equation}
 
-Introducing space in this way it tell how this smaller economies are affected by the
-overall output of neighbors with a given relationship $W$. However as explain previously
-there is no universally accepted relationship $W$ and it is possible that depending the
-economy looked at this $W$ might be completely different and more complex that would be virtually
+Introducing space in this way it tells how this smaller economies are affected by the
+overall output of neighbors with a given relationship $W$. However as explained previously,
+there is no universally accepted relationship $W$ and it is possible that, depending the
+economy looked at, this $W$ might be completely different and more complex that would be virtually
 imposible to pick an appropriate $W$ for the model. This leads to misspecification \cite{florax2003misspecification}
